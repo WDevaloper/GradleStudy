@@ -3,13 +3,13 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-    id 'com.github.router2'
-    id 'com.github.router3'
+//    id 'com.github.router2'
+//    id 'com.github.router3'
 }
 
-router {
-    wikiDir rootProject.buildDir.absolutePath
-}
+//router {
+//    wikiDir rootProject.buildDir.absolutePath
+//}
 
 android {
     compileSdkVersion 30

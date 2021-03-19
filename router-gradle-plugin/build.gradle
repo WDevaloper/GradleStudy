@@ -25,7 +25,7 @@ uploadArchives {
                     // 设置groupId，通常为包名
                     groupId = 'com.github.router'
                     // 设置artifactId，为插件名称
-                    artifactId = "router-gradle-plugin"
+                    artifactId = "router-gradle-plugin1"
                     // 设置版本号
                     version = "1.0.0"
 
