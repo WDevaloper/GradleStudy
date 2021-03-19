@@ -1,6 +1,14 @@
+// 当前子工程构建行为
+
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'com.github.router2'
+    id 'com.github.router3'
+}
+
+router {
+    wikiDir rootProject.buildDir.absolutePath
 }
 
 android {
@@ -34,12 +42,118 @@ android {
 
 dependencies {
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'androidx.core:core-ktx:1.2.0'
-    implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'com.google.android.material:material:1.1.0'
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    testImplementation 'junit:junit:4.+'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:${kotlin_version}"
+    implementation 'androidx.core:core-ktx:1.3.2'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'com.google.android.material:material:1.2.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 }
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+
+def androidClosure = {
+    compileSdkVersion 31
+    defaultConfig {
+        versionName "22322"
+    }
+}
+
+Android android = new Android()
+androidClosure.setDelegate(android)
+androidClosure.call()
+
+println("android=$android")
+
+class Android {
+    private int compileSdkVersion
+    private DefaultConfig defaultConfig
+
+    Android() {
+        // 如果不写，会抛出异常：Could not find method versionName() for arguments [22322] on project
+        defaultConfig = new DefaultConfig()
+    }
+
+    def compileSdkVersion(int compileSdkVersion) {
+        this.compileSdkVersion = compileSdkVersion
+    }
+
+    // 如果闭包中和类型同名就会进行赋值
+    def defaultConfig(Closure closure) {
+        closure.setDelegate(defaultConfig)
+        closure.call()
+    }
+
+    @Override
+    String toString() {
+        return "andorid{ compileSdkVersion = $compileSdkVersion defaultConfig = $defaultConfig}"
+    }
+}
+
+class DefaultConfig {
+    private String versionName
+
+    def versionName(String versionName) {
+        this.versionName = versionName
+    }
+
+    @Override
+    String toString() {
+        return "defaultConfig{versionName=$versionName}"
+    }
+}
+
+
+println("app build.gradle")
+
+
+task testTask() { Task task ->
+    task.group("study")
+    task.doLast {
+        println("我是 testTask 任务")
+    }
+}
+
+task testTask2() { Task task ->
+    task.group("study")
+    task.dependsOn(testTask)
+    task.doLast {
+        println("我是 testTask2 任务")
+    }
+
+}
+
+task test1() { Task task ->
+    task.group("study")
+    task.doLast {
+        println("我是 test1 任务")
+    }
+}
+
+task test2() { Task task ->
+    task.setEnabled(false)
+    task.group("study")
+    task.doLast {
+        println("我是 test2 任务")
+    }
+    task.description("你可以给你的任务加入一段描述性的文字. 它将会在任务执行的时候显示出来.")
+}
+
+//test2依赖test1
+//test2.dependsOn(test1)
+
+//  test1必须在test2之后执行  gradlew :app:test1 :app:test2 -q
+//test1.mustRunAfter(test2)
+// test1应该在test2之后执行
+//test1.shouldRunAfter(test2)
+// 终止任务并不是指终止一个任务, 而是指一个无论运行结果如何最后都会被执行的任务.
+test1.finalizedBy(test2)
+
+
+println "我是app.gradle"
+
+apply from: rootProject.file("other.gradle")
