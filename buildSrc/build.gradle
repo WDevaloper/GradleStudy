@@ -1,0 +1,35 @@
+apply plugin: "groovy"
+apply plugin: 'java'
+
+
+repositories {
+    jcenter()
+    google()
+}
+
+dependencies {
+    implementation gradleApi()
+    implementation localGroovy()
+    implementation "com.android.tools.build:gradle:4.1.2"
+}
+
+apply plugin: 'maven'
+
+
+// 配置maven插件中的uploadArchives任务
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: uri("../repo")) {
+                pom {
+                    // 设置groupId，通常为包名
+                    groupId = 'com.github.router'
+                    // 设置artifactId，为插件名称
+                    artifactId = "router-gradle-plugin0"
+                    // 设置版本号
+                    version = "1.0.0"
+                }
+            }
+        }
+    }
+}

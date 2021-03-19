@@ -1,2 +1,52 @@
+// 申明子工程
+include ':hotfit'
 include ':app'
+include ':router-gradle-plugin'
+include ':router-gradle-plugin2'
 rootProject.name = "GradleStudy"
+
+println("-----我是settings.gradle  ---- ${rootProject.projectDir}")
+
+// 添加构建生命周期监听
+gradle.addBuildListener(new BuildListener() {
+
+    @Override
+    void buildStarted(Gradle gradle) {
+        // 这个回调一般不会调用，因为我们注册的时机太晚，注册的时候构建已经开始了，是 gradle 内部使用的
+        println("[life-cycle] ---- buildStarted")
+    }
+
+    // 初始化阶段完成  申明子工程完成    settings.gradle文件解析完成
+    @Override
+    void settingsEvaluated(Settings settings) {
+        println("[life-cycle] ---- 初始化阶段完成")
+    }
+
+
+    //项目加载完成
+    @Override
+    void projectsLoaded(Gradle gradle) {
+        println("[life-cycle] ---- 项目加载完成")
+        gradle.rootProject.subprojects.each { pro ->
+            pro.beforeEvaluate {
+                println("---此 ${pro.name} 项目配置之前调用")
+            }
+            pro.afterEvaluate {
+                println("---此${pro.name} 项目配置之后调用a")
+            }
+        }
+    }
+
+
+    //所有project配置阶段完成
+    @Override
+    void projectsEvaluated(Gradle gradle) {
+        println("[life-cycle] ---- 所有project配置阶段完成")
+    }
+
+    //构建结束
+    @Override
+    void buildFinished(BuildResult result) {
+        println("[life-cycle] ---- 构建结束")
+    }
+})
