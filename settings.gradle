@@ -3,6 +3,8 @@ include ':hotfit'
 include ':app'
 include ':router-gradle-plugin'
 include ':router-gradle-plugin2'
+include ':router-annotations'
+include ':router-processor'
 rootProject.name = "GradleStudy"
 
 println("-----我是settings.gradle  ---- ${rootProject.projectDir}")

@@ -39,7 +39,7 @@ uploadArchives {
                                    }
                          }
                      */
-                    // 引入插件
+                    // 引入插件  ，就是说插件发布的仓库   groupId:artifactId:version
                     //  classpath "com.github.router:router-gradle-plugin:1.0.0"
 
                     // 应用插件
