@@ -1,5 +1,5 @@
 apply plugin: 'java'
-
+apply from: rootProject.file("maven-publish.gradle")
 
 dependencies {
     implementation project(':router-annotations')

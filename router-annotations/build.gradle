@@ -1,6 +1,8 @@
 // 设置Java插件
 apply plugin: 'java'
 
+apply from: rootProject.file("maven-publish.gradle")
+
 
 // 设置源码兼容性
 targetCompatibility = JavaVersion.VERSION_1_8
