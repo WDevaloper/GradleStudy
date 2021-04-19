@@ -4,13 +4,15 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'kotlin-kapt'
-//    id 'com.github.router2'
-//    id 'com.github.router3'
+    id 'com.github.router'
+    // id 'com.github.router2'
+    // id 'com.github.router3'
 }
 
-//router {
-//    wikiDir rootProject.buildDir.absolutePath
-//}
+router {
+    wikiDir getRootDir().absolutePath
+    wikiName "router.md"
+}
 
 android {
     compileSdkVersion 30
@@ -52,8 +54,17 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     implementation project(':router-annotations')
+    implementation project(':hotfit')
     kapt project(':router-processor')
 }
+
+//使用arguments {}块将参数传递给注释处理器：
+//kapt {
+//    arguments {
+//        arg("MODULE_NAME", project.getName())
+//        arg("root_project_dir", rootProject.projectDir.absolutePath)
+//    }
+//}
 
 tasks.withType(JavaCompile) {
     options.encoding = "UTF-8"

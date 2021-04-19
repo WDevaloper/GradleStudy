@@ -3,7 +3,12 @@ package com.github.router;
 import com.github.router.annotate.Destination;
 import com.github.router.annotate.DestinationMethod;
 import com.google.auto.service.AutoService;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Collections;
@@ -33,12 +38,20 @@ public class DestinationProcessor extends AbstractProcessor {
 
     private Filer filer;
     private Messager messager;
+    private ProcessingEnvironment mProcessingEnvironment;
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnvironment) {
         super.init(processingEnvironment);
+        this.mProcessingEnvironment = processingEnvironment;
         messager = processingEnv.getMessager();
         filer = processingEnvironment.getFiler();
+        String root_project_dir = processingEnvironment.getOptions().get("root_project_dir");
+        System.out.println("root_project_dir>>>" + root_project_dir);
+
+
+        String module_name = processingEnvironment.getOptions().get("MODULE_NAME");
+        System.out.println("MODULE_NAME>>>" + module_name);
     }
 
     @Override
@@ -67,6 +80,11 @@ public class DestinationProcessor extends AbstractProcessor {
             return false;
         }
 
+        String root_project_dir =
+                mProcessingEnvironment.getOptions().get("root_project_dir");
+        String module_name =
+                mProcessingEnvironment.getOptions().get("MODULE_NAME");
+
         Set<? extends Element> allDestinations =
                 roundEnvironment.getElementsAnnotatedWith(Destination.class);
 
@@ -87,6 +105,8 @@ public class DestinationProcessor extends AbstractProcessor {
         codeBuffer.append("        Map<String, String> mapping = new HashMap<>();\n");
 
 
+        JsonArray destinationJsonArray = new JsonArray();
+
         for (Element element : allDestinations) {
             final TypeElement typeElement = (TypeElement) element;
             final Destination destination = typeElement.getAnnotation(Destination.class);
@@ -96,12 +116,20 @@ public class DestinationProcessor extends AbstractProcessor {
 
             String url = destination.url();
             String description = destination.description();
-            String qualifiedName = typeElement.getQualifiedName().toString();
+            String realPath = typeElement.getQualifiedName().toString();
 
-            codeBuffer.append("        mapping.put(")
+            JsonObject itemJson = new JsonObject();
+            itemJson.addProperty("url", url);
+            itemJson.addProperty("description", description);
+            itemJson.addProperty("realPath", realPath);
+
+            destinationJsonArray.add(itemJson);
+
+            codeBuffer
+                    .append("        mapping.put(")
                     .append("\"").append(url).append("\"")
                     .append(",")
-                    .append("\"").append(qualifiedName).append("\"")
+                    .append("\"").append(realPath).append("\"")
                     .append(");\n");
 
             System.out.println("url " + url + " description " + description + " className " + className);
@@ -124,6 +152,34 @@ public class DestinationProcessor extends AbstractProcessor {
             e.printStackTrace();
         }
 
+
+        // 写入Json 文件
+
+        // 使用
+        File rootDirFile = new File(root_project_dir);
+        if (!rootDirFile.exists()) {
+            throw new RuntimeException("root_project_dir not exists ");
+        }
+
+        File routerMappingDir = new File(rootDirFile, "router_mapping");
+        if (!routerMappingDir.exists()) {
+            routerMappingDir.mkdir();
+        }
+
+        File mappingFile =
+                new File(routerMappingDir, module_name + "_mapping" + ".json");
+
+        try {
+            BufferedWriter out =
+                    new BufferedWriter(new FileWriter(mappingFile));
+            String jsonStr =
+                    destinationJsonArray.toString();
+            out.write(jsonStr);
+            out.flush();
+            out.close();
+        } catch (Throwable throwable) {
+            throw new RuntimeException("Error while write Json", throwable);
+        }
 
         return true;
     }

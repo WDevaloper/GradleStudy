@@ -52,3 +52,8 @@ gradle.addBuildListener(new BuildListener() {
         println("[life-cycle] ---- 构建结束")
     }
 })
+
+
+gradle.taskGraph.beforeTask { Task task ->
+    println("all task >>>" + task.name)
+}

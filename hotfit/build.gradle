@@ -1,6 +1,8 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
+    id 'kotlin-kapt'
+    id 'com.github.router'
 }
 
 android {
@@ -41,6 +43,18 @@ dependencies {
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+
+    implementation project(':router-annotations')
+    kapt project(':router-processor')
 }
+
+//使用arguments {}块将参数传递给注释处理器：
+//kapt {
+//    arguments {
+//        arg("MODULE_NAME", project.getName())
+//        arg("root_project_dir", rootProject.projectDir.absolutePath)
+//    }
+//}
+
 
 println("hotfit build.gradle")
