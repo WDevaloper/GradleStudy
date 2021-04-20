@@ -10,8 +10,8 @@ plugins {
 }
 
 router {
-    wikiDir getRootDir().absolutePath
-    wikiName "router.md"
+    wikiDir project.buildDir.absolutePath
+    wikiName "router_doc.md"
 }
 
 android {

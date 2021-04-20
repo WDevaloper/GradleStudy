@@ -2,6 +2,7 @@ package com.github.router.core
 
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.LibraryPlugin
+import com.github.router.Constants
 import com.github.router.extension.RouterExtension
 import groovy.json.JsonSlurper
 import org.gradle.api.GradleException
@@ -52,16 +53,16 @@ class RouterPlugin implements Plugin<Project> {
         def kaptExt = target.extensions.findByName("kapt")
         if (kaptExt != null) {
             kaptExt.arguments {
-                arg("MODULE_NAME", target.getName())
-                arg("root_project_dir", target.rootProject.projectDir.absolutePath)
+                arg(Constants.MODULE_NAME, target.getName())
+                arg(Constants.ROOT_PROJECT_DIR, target.rootProject.projectDir.absolutePath)
             }
         }
     }
 
-    private void cleanOldBuildProduct(Project target) {
+    private static void cleanOldBuildProduct(Project target) {
         target.clean.doFirst {
             File routerMappingDir =
-                    new File(target.rootProject.projectDir, "router_mapping")
+                    new File(target.rootProject.projectDir, Constants.ROUTER_MAPPING_DOC_DIR)
             if (routerMappingDir.exists()) {
                 routerMappingDir.deleteDir()
             }
@@ -69,25 +70,23 @@ class RouterPlugin implements Plugin<Project> {
     }
 
 
-    private Set<Task> generateDoc(Project target, RouterExtension routerInfo) {
-        target.tasks.findAll { Task task ->
-            task.name.startsWith("compile") && task.name.endsWith("JavaWithJavac")
-        }.each { Task task ->
+    private static void generateDoc(Project target, RouterExtension routerInfo) {
+        // 找到Javac任务
+        def javacTasks = target.tasks.findAll { Task task -> task.name.startsWith("compile") && task.name.endsWith("JavaWithJavac") }
+
+        // 理论上只有一个Task，无需遍历
+        javacTasks.each { Task task ->
             task.doLast {
-                println("task>>>" + task.name)
+                // 每个模块都有javac任务,所以只有宿主或app模块才能生成文档,方便其他Library也生成文档
                 def hasAppPlugin = target.plugins.hasPlugin(AppPlugin.class)
-                if (hasAppPlugin) {
-                    // 每个模块都有javac任务,
-                    generateDocumentsTheJavacAfter(target, routerInfo)
-                }
+                if (hasAppPlugin) generateDocumentsTheJavacAfter(target, routerInfo)
             }
         }
     }
 
-    private void generateDocumentsTheJavacAfter(Project project, RouterExtension routerInfo) {
+    private static void generateDocumentsTheJavacAfter(Project project, RouterExtension routerInfo) {
         File routerMappingDir =
-                new File(project.rootProject.projectDir, "router_mapping")
-        println("routerMappingDir >>>>>" + routerMappingDir)
+                new File(project.rootProject.projectDir, Constants.ROUTER_MAPPING_DOC_DIR)
         if (!routerMappingDir.exists()) {
             return
         }
@@ -97,32 +96,32 @@ class RouterPlugin implements Plugin<Project> {
         File[] allChildFiles = routerMappingDir.listFiles(new FilenameFilter() {
             @Override
             boolean accept(File fileDir, String fileName) {
-                println("routerMappingDir >>>>>" + fileName)
                 return fileName.endsWith(".json")
             }
         })
 
-        if (allChildFiles.length <= 0) {
-            return
-        }
+        if (allChildFiles.length <= 0) return
 
         StringBuilder markdownBuilder = new StringBuilder()
-        markdownBuilder.append("# 页面文档\n\n")
+        markdownBuilder.append("# 路由页面文档\n\n")
 
         allChildFiles.each { child ->
             JsonSlurper jsonSlurper = new JsonSlurper()
             def contentArray = jsonSlurper.parse(child)
             contentArray.each { innerContent ->
-                def url = innerContent["url"]
-                def description = innerContent["description"]
-                def realPath = innerContent["realPath"]
+                def url = innerContent[Constants.KEY_PATH]
+                def description = innerContent[Constants.KEY_DESCRIPTION]
+                def realPath = innerContent[Constants.KEY_REAL_PATH]
 
                 markdownBuilder
                         .append("## $description\n")
-                        .append("- url: $url\n")
+                        .append("- path: $url\n")
                         .append("- realPath: $realPath\n\n")
             }
         }
+
+        // 数据收集完成把，缓存每个模块的文档删除
+        routerMappingDir.deleteDir()
 
         if (routerInfo.wikiDir == null) {
             throw new RuntimeException("routerInfo.wikiDir not null")
@@ -135,9 +134,10 @@ class RouterPlugin implements Plugin<Project> {
         }
 
         if (routerInfo.wikiName == null || routerInfo.wikiName.length() < 1) {
-            routerInfo.wikiName = "路由页面文档.md"
+            routerInfo.wikiName = Constants.DEFAULT_ROUTER_WIKI_NAME
         }
 
+        // 写入文档
         File wikiFile = new File(wikiFileDir, routerInfo.wikiName)
         wikiFile.write(markdownBuilder.toString())
     }
