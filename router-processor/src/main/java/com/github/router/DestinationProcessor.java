@@ -48,7 +48,6 @@ public class DestinationProcessor extends AbstractProcessor {
         filer = processingEnvironment.getFiler();
         rootProjectDir = processingEnvironment.getOptions().get(Constants.ROOT_PROJECT_DIR);
         moduleName = processingEnvironment.getOptions().get(Constants.MODULE_NAME);
-        System.out.println("root_project_dir>>>" + rootProjectDir + " moduleName>>>>" + moduleName);
     }
 
     @Override
@@ -76,6 +75,8 @@ public class DestinationProcessor extends AbstractProcessor {
         if (roundEnvironment.processingOver()) {
             return false;
         }
+
+
 
         Set<? extends Element> allDestinations =
                 roundEnvironment.getElementsAnnotatedWith(Destination.class);
