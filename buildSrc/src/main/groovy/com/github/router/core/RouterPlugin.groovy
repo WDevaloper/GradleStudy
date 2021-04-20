@@ -124,7 +124,11 @@ class RouterPlugin implements Plugin<Project> {
         routerMappingDir.deleteDir()
 
         if (routerInfo.wikiDir == null) {
-            throw new RuntimeException("routerInfo.wikiDir not null")
+            routerInfo.wikiDir = project.buildDir.absolutePath
+        }
+
+        if (routerInfo.wikiName == null || routerInfo.wikiName.length() < 1) {
+            routerInfo.wikiName = Constants.DEFAULT_ROUTER_WIKI_NAME
         }
 
         File wikiFileDir = new File(routerInfo.wikiDir)
@@ -133,9 +137,6 @@ class RouterPlugin implements Plugin<Project> {
             wikiFileDir.mkdir()
         }
 
-        if (routerInfo.wikiName == null || routerInfo.wikiName.length() < 1) {
-            routerInfo.wikiName = Constants.DEFAULT_ROUTER_WIKI_NAME
-        }
 
         // 写入文档
         File wikiFile = new File(wikiFileDir, routerInfo.wikiName)
