@@ -82,6 +82,7 @@ public class DestinationProcessor extends AbstractProcessor {
         // 避免多次调用 process 方法
         if (roundEnvironment.processingOver()) {
             return false;
+
         }
 
 
@@ -94,7 +95,8 @@ public class DestinationProcessor extends AbstractProcessor {
         String routerMappingClassName = moduleName + Constants.ROUTER_MAPPING_SUFFIX;
 
         StringBuilder codeBuffer = new StringBuilder();
-        codeBuffer.append("package com.github.gradle.mapping;\n\n");
+        codeBuffer.append("package " + Constants.ROUTER_PACKAGE + ";\n\n");
+
         codeBuffer.append("import java.util.HashMap;\n");
         codeBuffer.append("import java.util.Map;\n\n");
 
