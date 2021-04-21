@@ -13,4 +13,8 @@ public class Constants {
 
     public final static String ROUTER_MAPPING_DOC_DIR = "router_mapping";
     public final static String ROUTER_MAPPING_DOC_NAME_SUFFIX = "_mapping.json";
+
+
+    // Activity类型
+    public static final String ACTIVITY = "android.app.Activity";
 }
