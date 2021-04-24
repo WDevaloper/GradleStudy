@@ -22,8 +22,10 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import javax.tools.Diagnostic;
 
 
 @AutoService({Processor.class})
@@ -38,6 +40,9 @@ public class DestinationProcessor extends AbstractProcessor {
     private String rootProjectDir;
     private String moduleName;
 
+
+    private Element activityElement;
+
     @Override
     public synchronized void init(ProcessingEnvironment processingEnvironment) {
         super.init(processingEnvironment);
@@ -48,6 +53,9 @@ public class DestinationProcessor extends AbstractProcessor {
         filer = processingEnvironment.getFiler();
         rootProjectDir = processingEnvironment.getOptions().get(Constants.ROOT_PROJECT_DIR);
         moduleName = processingEnvironment.getOptions().get(Constants.MODULE_NAME);
+        Helper.init(typeUtils);
+        //通过类名获取Activity Element类型
+        activityElement = elements.getTypeElement(Constants.ACTIVITY);
     }
 
     @Override
@@ -74,8 +82,8 @@ public class DestinationProcessor extends AbstractProcessor {
         // 避免多次调用 process 方法
         if (roundEnvironment.processingOver()) {
             return false;
-        }
 
+        }
 
 
         Set<? extends Element> allDestinations =
@@ -87,7 +95,8 @@ public class DestinationProcessor extends AbstractProcessor {
         String routerMappingClassName = moduleName + Constants.ROUTER_MAPPING_SUFFIX;
 
         StringBuilder codeBuffer = new StringBuilder();
-        codeBuffer.append("package com.github.gradle.mapping;\n\n");
+        codeBuffer.append("package " + Constants.ROUTER_PACKAGE + ";\n\n");
+
         codeBuffer.append("import java.util.HashMap;\n");
         codeBuffer.append("import java.util.Map;\n\n");
 
@@ -103,6 +112,10 @@ public class DestinationProcessor extends AbstractProcessor {
             final Destination destination = typeElement.getAnnotation(Destination.class);
             if (destination == null) {
                 continue;
+            }
+
+            if (!Helper.isSubtype(element, activityElement)) {
+                messager.printMessage(Diagnostic.Kind.ERROR, "The " + typeElement.getQualifiedName() + " not inheriting Activity");
             }
 
             String path = destination.url();

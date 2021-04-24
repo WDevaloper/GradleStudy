@@ -1,7 +1,9 @@
 package com.github.router.core
 
+import com.android.build.gradle.AppExtension
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.LibraryPlugin
+import com.android.utils.FileUtils
 import com.github.router.Constants
 import com.github.router.extension.RouterExtension
 import groovy.json.JsonSlurper
@@ -15,6 +17,8 @@ class RouterPlugin implements Plugin<Project> {
 
     @Override
     void apply(Project target) {
+
+
         def hasAppPlugin = target.plugins.hasPlugin(AppPlugin.class)
         def hasLibPlugin = target.plugins.hasPlugin(LibraryPlugin.class)
 
@@ -22,9 +26,16 @@ class RouterPlugin implements Plugin<Project> {
             throw new GradleException("RouterPlugin: The 'com.android.application' or 'com.android.library' plugin is required.")
         }
 
+        // 注册Transform 只有App工程才有AppExtension
+        if (hasAppPlugin) {
+            def android = target.extensions.getByType(AppExtension)
+            android.registerTransform(new TestRouterMappingTransform())
+            android.registerTransform(new RouterMappingTransform())
+        }
+
         // 1、自动帮助用户传递路径参数到注解处理器中
         autoInjectParamToAnnotationProcessor(target)
-        // 2、实现旧的构建产物自动清理
+        // 2、实现旧的构建产物自动清理(当前的Project)
         cleanOldBuildProduct(target)
 
         // 创建一个新扩展并将其添加到此容器。
@@ -37,6 +48,8 @@ class RouterPlugin implements Plugin<Project> {
             // 3、在JavaC(compileDebugJavaWithJavac)任务后，汇总生成文档
             generateDoc(target, routerInfo)
         }
+
+        println "module name >>>>>" + target.name
     }
 
 
