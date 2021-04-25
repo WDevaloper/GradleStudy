@@ -3,7 +3,6 @@ package com.github.router.core
 import com.android.build.gradle.AppExtension
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.LibraryPlugin
-import com.android.utils.FileUtils
 import com.github.router.Constants
 import com.github.router.extension.RouterExtension
 import groovy.json.JsonSlurper
@@ -29,8 +28,7 @@ class RouterPlugin implements Plugin<Project> {
         // 注册Transform 只有App工程才有AppExtension
         if (hasAppPlugin) {
             def android = target.extensions.getByType(AppExtension)
-            android.registerTransform(new TestRouterMappingTransform())
-            android.registerTransform(new RouterMappingTransform())
+            android.registerTransform(new ImoocRouterMappingTransform())
         }
 
         // 1、自动帮助用户传递路径参数到注解处理器中
