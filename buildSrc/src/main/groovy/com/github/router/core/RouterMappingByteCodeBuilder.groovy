@@ -1,7 +1,7 @@
 package com.github.router.core
 
-import groovyjarjarasm.asm.MethodVisitor
 import org.objectweb.asm.ClassWriter
+import org.objectweb.asm.MethodVisitor
 import org.objectweb.asm.Opcodes
 
 
@@ -65,10 +65,12 @@ class RouterMappingByteCodeBuilder implements Opcodes {
                 "<init>",
                 "()V",
                 false)
+        // 保存map到var0变量
         methodVisitor.visitVarInsn(ASTORE, 0)
         //  3.2 放入所有映射表
-        methodVisitor.visitVarInsn(ALOAD, 0)
         classNames.each { String className ->
+            // 拿到var0变量
+            methodVisitor.visitVarInsn(ALOAD, 0)
             methodVisitor.visitMethodInsn(
                     INVOKESTATIC,
                     className,
@@ -83,10 +85,10 @@ class RouterMappingByteCodeBuilder implements Opcodes {
                     true)
         }
 
-        methodVisitor.visitVarInsn(ALOAD, 0)
+        // 拿到var0变量并返回var0
+        methodVisitor.visitVarInsn(ALOAD, 0);
         methodVisitor.visitInsn(ARETURN)
         methodVisitor.visitMaxs(2, 1)
-
         methodVisitor.visitEnd()
 
         return classWriter.toByteArray()

@@ -7,7 +7,7 @@ import java.util.jar.JarFile
 class RouterMappingCollector {
     // 注解处理器生成映射表类的特征
     private final String MAPPING_PACKAGE_NAME = "com/github/gradle/mapping"
-    private final String MAPPING_CLASS_SUFFIX = "\$\$Module\$\$RouterMapping"
+    private final String MAPPING_CLASS_SUFFIX = "_RouterMappingForModule"
     private final String CLASS_FILE_SUFFIX = ".class"
 
     private final Set<String> mappingClassNames = new HashSet<>()

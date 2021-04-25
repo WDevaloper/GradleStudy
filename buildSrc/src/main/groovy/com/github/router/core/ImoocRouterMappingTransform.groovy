@@ -4,6 +4,9 @@ import com.android.build.api.transform.*
 import com.android.build.gradle.internal.pipeline.TransformManager
 import com.android.utils.FileUtils
 
+import java.util.jar.JarOutputStream
+import java.util.zip.ZipEntry
+
 /**
  * Transform 将输入进行处理，然后写入到指定的目录下作为下一个 Transform 的输入源。
  */
@@ -90,6 +93,23 @@ class ImoocRouterMappingTransform extends Transform {
             }
         }
 
-        RouterMappingByteCodeBuilder.get(routerMappingCollector.getMappingClassNames())
+        File routerMappingJarFile =
+                transformInvocation.getOutputProvider()
+                        .getContentLocation("router_mapping",
+                                getInputTypes(), getScopes(), Format.JAR)
+
+        println getName() + " >>>>>>>>> " + routerMappingJarFile.absolutePath
+
+        FileOutputStream fos = new FileOutputStream(routerMappingJarFile)
+        JarOutputStream jarFos = new JarOutputStream(fos)
+
+        ZipEntry zipEntry = new ZipEntry(RouterMappingByteCodeBuilder.CLASS_NAME + ".class")
+        jarFos.putNextEntry(zipEntry)
+        jarFos.write(
+                RouterMappingByteCodeBuilder.get(
+                        routerMappingCollector.getMappingClassNames()))
+        jarFos.closeEntry()
+        jarFos.close()
+        fos.close()
     }
 }

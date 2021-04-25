@@ -5,7 +5,7 @@ import com.github.gradle.MainActivity;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RouterMapping_1 {
+public class app$$Module$$RouterMapping {
 
     public static Map<String, Class<?>> get() {
         Map<String, Class<?>> mapping = new HashMap<>();

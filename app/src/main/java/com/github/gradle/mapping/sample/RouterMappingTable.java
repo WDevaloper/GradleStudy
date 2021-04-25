@@ -8,7 +8,7 @@ public class RouterMappingTable {
     public static Map<String, Class<?>> get() {
         Map<String, Class<?>> mapping = new HashMap<>();
 
-        mapping.putAll(RouterMapping_1.get());
+        mapping.putAll(app$$Module$$RouterMapping.get());
         mapping.putAll(RouterMapping_2.get());
 
         return mapping;
