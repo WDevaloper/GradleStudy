@@ -1,14 +1,15 @@
-package com.github.gradle.mapping;
+package com.github.gradle.mapping.sample;
+
+import com.github.gradle.MainActivity;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class RouterMappingTable {
+public class RouterMapping_2 {
+
     public static Map<String, Class<?>> get() {
         Map<String, Class<?>> mapping = new HashMap<>();
-
-        mapping.putAll(RouterMapping_1.get());
-        mapping.putAll(RouterMapping_2.get());
+        mapping.put("/app/MainActivity", MainActivity.class);
 
         return mapping;
     }

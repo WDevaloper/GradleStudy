@@ -90,6 +90,6 @@ class ImoocRouterMappingTransform extends Transform {
             }
         }
 
-        println routerMappingCollector.getMappingClassNames().toString()
+        RouterMappingByteCodeBuilder.get(routerMappingCollector.getMappingClassNames())
     }
 }

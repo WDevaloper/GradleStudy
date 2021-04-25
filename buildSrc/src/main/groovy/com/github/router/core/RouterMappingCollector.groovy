@@ -34,7 +34,7 @@ class RouterMappingCollector {
             // classFile.name >>>>> app$$Module$$RouterMapping.class
             if (classFile.name.endsWith(MAPPING_CLASS_SUFFIX + CLASS_FILE_SUFFIX)) {
                 String className = classFile.name.replace(CLASS_FILE_SUFFIX, "")
-                mappingClassNames.add(+MAPPING_PACKAGE_NAME + "/" + className)
+                mappingClassNames.add(MAPPING_PACKAGE_NAME + "/" + className)
             }
             return
         }
