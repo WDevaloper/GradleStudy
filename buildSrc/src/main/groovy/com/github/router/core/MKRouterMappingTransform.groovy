@@ -9,8 +9,14 @@ import java.util.zip.ZipEntry
 
 /**
  * Transform 将输入进行处理，然后写入到指定的目录下作为下一个 Transform 的输入源。
+ *
+ *
+ * 目前实现Router Transform有两种方式;
+ *  1、先定义路由总表类（RouterMapping），通过Transform收集，apt生成各个模的子路由表，然后通过ASM注入路由总表类（RouterMapping）
+ *  2、与第一种方式相反，也就是现在这种，通过Transform收集apt生成各个模的子路由表，通过ASM生成路由总表
+ *
  */
-class ImoocRouterMappingTransform extends Transform {
+class MKRouterMappingTransform extends Transform {
 
 
     /**
@@ -53,11 +59,13 @@ class ImoocRouterMappingTransform extends Transform {
         return false
     }
 
+
     @Override
     void transform(TransformInvocation transformInvocation) throws TransformException, InterruptedException, IOException {
         TransformOutputProvider transformOutputProvider = transformInvocation.getOutputProvider()
 
         RouterMappingCollector routerMappingCollector = new RouterMappingCollector()
+
         // 1、遍历所有Input
         // 2、对Input二次处理
         // 3、对Input拷贝到目标目录
@@ -73,6 +81,7 @@ class ImoocRouterMappingTransform extends Transform {
 
                 routerMappingCollector.collect(directoryInput.file)
 
+                // 收集类名
                 FileUtils.copyDirectory(directoryInput.file, destDir)
             }
 
@@ -87,6 +96,7 @@ class ImoocRouterMappingTransform extends Transform {
                         Format.JAR
                 )
 
+                // 收集类名
                 routerMappingCollector.collectFromJarFile(jarInput.file)
 
                 FileUtils.copyFile(jarInput.file, destFile)

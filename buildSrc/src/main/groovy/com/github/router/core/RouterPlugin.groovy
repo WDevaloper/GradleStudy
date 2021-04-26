@@ -28,7 +28,7 @@ class RouterPlugin implements Plugin<Project> {
         // 注册Transform 只有App工程才有AppExtension
         if (hasAppPlugin) {
             def android = target.extensions.getByType(AppExtension)
-            android.registerTransform(new ImoocRouterMappingTransform())
+            android.registerTransform(new MKRouterMappingTransform())
         }
 
         // 1、自动帮助用户传递路径参数到注解处理器中
