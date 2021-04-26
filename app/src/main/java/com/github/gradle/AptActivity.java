@@ -13,7 +13,6 @@ import com.github.router.annotate.DestinationMethod;
 public class AptActivity extends AppCompatActivity {
 
     @Override
-    @DestinationMethod(url = "/app/AptActivity")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_apt);
