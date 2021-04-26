@@ -1,4 +1,4 @@
-// 申明子工程
+include ':router-runtime'// 申明子工程
 include ':hotfit'
 include ':app'
 include ':router-gradle-plugin'

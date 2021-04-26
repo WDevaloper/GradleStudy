@@ -114,9 +114,11 @@ class MKRouterMappingTransform extends Transform {
 
         FileOutputStream fos = new FileOutputStream(routerMappingJarFile)
         JarOutputStream jarFos = new JarOutputStream(fos)
-
+        // jar包中文件
         ZipEntry zipEntry = new ZipEntry(RouterMappingByteCodeBuilder.CLASS_NAME + ".class")
+        // 把文件放入jar中
         jarFos.putNextEntry(zipEntry)
+        // 把数据写入文件
         jarFos.write(
                 RouterMappingByteCodeBuilder.get(
                         routerMappingCollector.getMappingClassNames()))

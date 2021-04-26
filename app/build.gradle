@@ -54,6 +54,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     implementation project(':router-annotations')
     implementation project(':hotfit')
+    implementation project(':router-runtime')
     kapt project(':router-processor')
 }
 

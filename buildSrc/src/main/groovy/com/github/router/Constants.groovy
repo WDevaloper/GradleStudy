@@ -11,6 +11,5 @@ class Constants {
 
     public final static String ROUTER_MAPPING_DOC_DIR = "router_mapping"
 
-
     public final static String DEFAULT_ROUTER_WIKI_NAME = "router_wiki.md"
 }
