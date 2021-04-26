@@ -5,9 +5,9 @@ import java.util.jar.JarFile
 
 
 class RouterMappingCollector {
-    // 注解处理器生成映射表类的特征
+    // 注解处理器生成映射表类的特征  前缀
     private final String MAPPING_PACKAGE_NAME = "com/github/gradle/mapping"
-    private final String MAPPING_CLASS_SUFFIX = "_RouterMappingForModule"
+    private final String MAPPING_CLASS_PREFIX = "RouterMappingFrom_"
     private final String CLASS_FILE_SUFFIX = ".class"
 
     private final Set<String> mappingClassNames = new HashSet<>()
@@ -31,8 +31,9 @@ class RouterMappingCollector {
         }
         if (classFile.isFile()) {
             // classFile.absolutePath  >>> build\intermediates\javac\debug\classes\com\github\gradle\mapping\app$$Module$$RouterMapping.class
-            // classFile.name >>>>> app$$Module$$RouterMapping.class
-            if (classFile.name.endsWith(MAPPING_CLASS_SUFFIX + CLASS_FILE_SUFFIX)) {
+            // classFile.name >>>>> RouterMappingFrom_app.class
+            if (classFile.name.startsWith(MAPPING_CLASS_PREFIX)
+                    && classFile.name.endsWith(CLASS_FILE_SUFFIX)) {
                 String className = classFile.name.replace(CLASS_FILE_SUFFIX, "")
                 mappingClassNames.add(MAPPING_PACKAGE_NAME + "/" + className)
             }
@@ -59,7 +60,8 @@ class RouterMappingCollector {
         while (entries.hasMoreElements()) {
             JarEntry jarEntry = entries.nextElement()
             // jarEntry.name >>>>>> com/github/gradle/mapping/hotfit$$Module$$RouterMapping.class
-            if (jarEntry.name.endsWith(MAPPING_CLASS_SUFFIX + CLASS_FILE_SUFFIX)) {
+            if (jarEntry.name.contains(MAPPING_CLASS_PREFIX)
+                    && jarEntry.name.endsWith(CLASS_FILE_SUFFIX)) {
                 String className = jarEntry.name.replace(CLASS_FILE_SUFFIX, "")
                 mappingClassNames.add(className)
             }

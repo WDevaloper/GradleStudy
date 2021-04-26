@@ -92,7 +92,7 @@ public class DestinationProcessor extends AbstractProcessor {
         if (allDestinations.isEmpty()) return false;
 
         // 生成Router表类名  模块名+_RouterMapping
-        String routerMappingClassName = moduleName + Constants.ROUTER_MAPPING_SUFFIX;
+        String routerMappingClassName = Constants.ROUTER_MAPPING_SUFFIX + moduleName;
 
         StringBuilder codeBuffer = new StringBuilder();
         codeBuffer.append("package " + Constants.ROUTER_PACKAGE + ";\n\n");

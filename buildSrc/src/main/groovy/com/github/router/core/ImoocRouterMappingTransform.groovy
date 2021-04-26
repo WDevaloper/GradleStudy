@@ -93,6 +93,8 @@ class ImoocRouterMappingTransform extends Transform {
             }
         }
 
+
+        // 将生成的RouterMapping写入Transform生成Jar包中
         File routerMappingJarFile =
                 transformInvocation.getOutputProvider()
                         .getContentLocation("router_mapping",
