@@ -1,6 +1,7 @@
 package com.github.router
 
 class Constants {
+    // 模块名称
     public final static String MODULE_NAME = "MODULE_NAME"
     public final static String ROOT_PROJECT_DIR = "ROOT_PROJECT_DIR"
 
