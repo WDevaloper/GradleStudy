@@ -9,7 +9,7 @@ import android.util.Log;
 import com.github.router.annotate.Destination;
 import com.github.router.annotate.DestinationMethod;
 
-@Destination(url = "/app/AptActivity", description = "路由测试Tras")
+@Destination(url = "/app/AptActivity", description = "路由测试")
 public class AptActivity extends AppCompatActivity {
 
     @Override

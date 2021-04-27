@@ -4,6 +4,9 @@ package com.github.gradle.mapping.sample;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 总路由表
+ */
 public class RouterMappingTable {
     public static Map<String, Class<?>> get() {
         Map<String, Class<?>> mapping = new HashMap<>();

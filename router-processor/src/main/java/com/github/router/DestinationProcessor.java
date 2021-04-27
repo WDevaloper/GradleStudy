@@ -28,6 +28,9 @@ import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 
 
+/**
+ * 为每个模块生成 路由信息
+ */
 @AutoService({Processor.class})
 public class DestinationProcessor extends AbstractProcessor {
 
@@ -99,6 +102,8 @@ public class DestinationProcessor extends AbstractProcessor {
 
         codeBuffer.append("import java.util.HashMap;\n");
         codeBuffer.append("import java.util.Map;\n\n");
+
+        codeBuffer.append("/** ").append(moduleName).append("模块路由表").append(" */\n");
 
         codeBuffer.append("public class ").append(routerMappingClassName).append(" {\n\n");
         codeBuffer.append("    public static Map<String, Class<?>> get() {\n\n");

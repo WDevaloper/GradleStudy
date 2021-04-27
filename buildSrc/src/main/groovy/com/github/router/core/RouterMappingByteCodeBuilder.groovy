@@ -37,6 +37,8 @@ class RouterMappingByteCodeBuilder implements Opcodes {
                 null)
 
         methodVisitor.visitCode()
+
+        //访问局部变量指令。局部变量指令是加载或存储局部变量值的指令。
         methodVisitor.visitVarInsn(ALOAD, 0)
         methodVisitor.visitMethodInsn(
                 INVOKESPECIAL,
@@ -55,6 +57,7 @@ class RouterMappingByteCodeBuilder implements Opcodes {
                 "()Ljava/util/Map;",
                 "()Ljava/util/Map<Ljava/lang/String;Ljava/lang/Class<*>;>;",
                 null)
+
         methodVisitor.visitCode()
         // 3.1 创建一个Map
         methodVisitor.visitTypeInsn(NEW, "java/util/HashMap")
