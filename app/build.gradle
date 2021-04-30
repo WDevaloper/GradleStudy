@@ -1,3 +1,7 @@
+import com.android.build.gradle.api.ApplicationVariant
+import com.android.build.gradle.api.BaseVariantOutput
+import com.android.build.gradle.tasks.PackageAndroidArtifact
+
 // 当前子工程构建行为
 
 plugins {
@@ -30,7 +34,14 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro', 'my-proguard-rules.txt'
+        }
+
+        debug {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
+                    'proguard-rules.pro',
+                    'my-proguard-rules.txt'
         }
     }
     compileOptions {
@@ -57,6 +68,7 @@ dependencies {
     implementation project(':user')
     implementation project(':router-runtime')
     kapt project(':router-processor')
+    implementation("androidx.multidex:multidex:2.0.1")
 }
 
 //使用arguments {}块将参数传递给注释处理器：
