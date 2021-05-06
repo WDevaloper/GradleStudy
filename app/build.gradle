@@ -1,7 +1,3 @@
-import com.android.build.gradle.api.ApplicationVariant
-import com.android.build.gradle.api.BaseVariantOutput
-import com.android.build.gradle.tasks.PackageAndroidArtifact
-
 // 当前子工程构建行为
 
 plugins {
@@ -31,6 +27,16 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    //https://zhuanlan.zhihu.com/p/33722674
+    //想要做到差异化显示，只需要在对应的product目录给同一个Activity配置不同的同名xml；
+    //想要实现不同的页面逻辑，只需要在对应的product目录中实现各自的同名Activitry
+    //想要获取差异化数据，只需要在对应的product目录中配置不同内容的同名的Config；
+    //想要对同一个Activity实现不同的配置(启动模式，过滤模式等)，只需要在对应的product中配置不同的Manifest；
+
+    // 定制不同的APK(Build Variants)
+    // build Types 定义一个产品的不同开发周期
+    // product flavors 定义多个不同的产品
+
     buildTypes {
         release {
             minifyEnabled false
@@ -42,6 +48,26 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    flavorDimensions "xiaomi", "baidu"
+
+    productFlavors {
+        xiaomi {
+            dimension "xiaomi"
+            versionNameSuffix "xiaomi"
+            versionName "1.0.6.3"
+            applicationIdSuffix ".xiaomi"
+            manifestPlaceholders = [CHANNEL: "xiaomi"]
+        }
+        baidu {
+            versionNameSuffix "baidu"
+            applicationIdSuffix ".baidu"
+            versionName "1.0.6.6"
+            dimension "baidu"
+            manifestPlaceholders = [CHANNEL: "baidu"]
+        }
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
