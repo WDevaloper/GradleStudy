@@ -40,16 +40,24 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
+                    'proguard-rules.pro'
         }
 
         debug {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
+                    'proguard-rules.pro'
+        }
+
+        dev {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
+                    'proguard-rules.pro'
         }
     }
 
-    flavorDimensions "xiaomi", "baidu"
+    flavorDimensions "xiaomi"
 
     productFlavors {
         xiaomi {
@@ -61,9 +69,9 @@ android {
         }
         baidu {
             versionNameSuffix "baidu"
-            applicationIdSuffix ".baidu"
+            applicationIdSuffix ".baidu" // 进程ID 而Manifest中的PakageName 是R文件的包名
             versionName "1.0.6.6"
-            dimension "baidu"
+            dimension "xiaomi"
             manifestPlaceholders = [CHANNEL: "baidu"]
         }
     }
