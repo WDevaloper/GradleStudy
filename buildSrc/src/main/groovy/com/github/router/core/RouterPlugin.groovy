@@ -29,6 +29,7 @@ class RouterPlugin implements Plugin<Project> {
         if (hasAppPlugin) {
             def android = target.extensions.getByType(AppExtension)
             android.registerTransform(new MKRouterMappingTransform())
+            android.registerTransform(new ModifyClassExtendsTransform())
         }
 
         // 1、自动帮助用户传递路径参数到注解处理器中
