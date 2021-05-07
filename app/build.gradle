@@ -49,29 +49,23 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
                     'proguard-rules.pro'
         }
-
-        dev {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
-                    'proguard-rules.pro'
-        }
     }
 
-    flavorDimensions "xiaomi"
+    flavorDimensions "default"
 
     productFlavors {
         xiaomi {
-            dimension "xiaomi"
+            dimension "default"
             versionNameSuffix "xiaomi"
             versionName "1.0.6.3"
             applicationIdSuffix ".xiaomi"
             manifestPlaceholders = [CHANNEL: "xiaomi"]
         }
         baidu {
+            dimension "default"
             versionNameSuffix "baidu"
             applicationIdSuffix ".baidu" // 进程ID 而Manifest中的PackageName 是R文件的包名
             versionName "1.0.6.6"
-            dimension "xiaomi"
             manifestPlaceholders = [CHANNEL: "baidu"]
         }
     }
