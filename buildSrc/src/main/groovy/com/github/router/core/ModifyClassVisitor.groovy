@@ -26,6 +26,7 @@ class ModifyClassVisitor extends ClassVisitor {
         //name>>>>com/github/gradle/mapping/update/IUpdateImpl , superName>>>>>com/github/modify/IUpdate
         // 修改为com/github/modify/IUpdate2
         String pendingClassName = "com/github/modify/IUpdate2"
+
         println "将$name 的父类：$superName  修改为：$pendingClassName"
         println "signature>>>>>>>$signature"
         super.visit(version,
@@ -35,9 +36,7 @@ class ModifyClassVisitor extends ClassVisitor {
                 pendingClassName,
                 interfaces)
     }
-
-
-    vis
+    
     @Override
     MethodVisitor visitMethod(
             int access,
