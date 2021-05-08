@@ -5,6 +5,9 @@ import org.objectweb.asm.ClassVisitor
 import org.objectweb.asm.MethodVisitor
 import org.objectweb.asm.Opcodes
 
+
+// visit visitSource visitModule  visitNestHost visitOuterClass visitAnnotation visitTypeAnnotation visitAttribute
+// visitNestMember visitInnerClass visitField visitMethod visitEnd
 class ModifyClassVisitor extends ClassVisitor {
     ModifyClassVisitor(ClassVisitor classVisitor) {
         super(Opcodes.ASM7, classVisitor)
@@ -18,6 +21,8 @@ class ModifyClassVisitor extends ClassVisitor {
             String signature,
             String superName,
             String[] interfaces) {
+
+
         //name>>>>com/github/gradle/mapping/update/IUpdateImpl , superName>>>>>com/github/modify/IUpdate
         // 修改为com/github/modify/IUpdate2
         String pendingClassName = "com/github/modify/IUpdate2"
@@ -32,6 +37,7 @@ class ModifyClassVisitor extends ClassVisitor {
     }
 
 
+    vis
     @Override
     MethodVisitor visitMethod(
             int access,
