@@ -51,7 +51,7 @@ class ModifyClassExtendsTransform extends Transform {
                         directoryInput.scopes,
                         Format.DIRECTORY)
 
-                byteCodeBuilder.weaveFile(
+                byteCodeBuilder.weaveByteCodeFromDir(
                         directoryInput.file.absolutePath,
                         directoryInput.file,
                         destDir)
@@ -67,6 +67,8 @@ class ModifyClassExtendsTransform extends Transform {
                         jarInput.scopes,
                         Format.JAR
                 )
+
+                byteCodeBuilder.weaveByteCodeFromJatFile(jarInput.file, destFile)
 
                 FileUtils.copyFile(jarInput.file, destFile)
             }

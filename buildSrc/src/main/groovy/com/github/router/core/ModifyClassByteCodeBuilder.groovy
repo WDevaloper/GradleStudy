@@ -1,7 +1,14 @@
 package com.github.router.core
 
+import org.apache.commons.io.IOUtils
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
+
+import java.util.jar.JarEntry
+import java.util.jar.JarFile
+import java.util.jar.JarInputStream
+import java.util.jar.JarOutputStream
+import java.util.zip.ZipEntry
 
 
 class ModifyClassByteCodeBuilder {
@@ -12,7 +19,7 @@ class ModifyClassByteCodeBuilder {
      * @param destFile 目标万金
      * @return
      */
-    void weaveFile(String srcRootDir, File srcFile, File destDir) {
+    void weaveByteCodeFromDir(String srcRootDir, File srcFile, File destDir) {
         if (srcFile.isFile()) {
             String outFileName = srcFile.absolutePath.replace(srcRootDir, destDir.absolutePath)
             File outputFile = new File(outFileName)
@@ -22,26 +29,16 @@ class ModifyClassByteCodeBuilder {
             }
             FileOutputStream fos = new FileOutputStream(outputFile)
 
-
             FileInputStream inputStream = new FileInputStream(srcFile)
 
             if (!srcFile.name.contains("IUpdateImpl")) {//不做处理
                 fos.write(inputStream.bytes)
-                inputStream.close()
-                fos.close()
-                return
+            } else {
+                realWeaveCode(inputStream, fos)
             }
 
-            ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS)
-            ModifyClassVisitor classVisitor = new ModifyClassVisitor(classWriter)
-
-            ClassReader classReader = new ClassReader(inputStream)
-            classReader.accept(classVisitor, ClassReader.EXPAND_FRAMES)
-
-            fos.write(classWriter.toByteArray())
             fos.close()
             inputStream.close()
-
             return
         }
 
@@ -50,6 +47,55 @@ class ModifyClassByteCodeBuilder {
 
         if (childFiles == null || childFiles.length <= 0) return
 
-        childFiles.each { File file -> weaveFile(srcRootDir, file, destDir) }
+        childFiles.each { File file -> weaveByteCodeFromDir(srcRootDir, file, destDir) }
+    }
+
+
+    void weaveByteCodeFromJatFile(File jarFile, File destFile) {
+
+        // 输出目标jar文件
+        FileOutputStream fos = new FileOutputStream(destFile)
+        JarOutputStream destJarOs = new JarOutputStream(fos)
+
+
+        JarFile srcJarFile = new JarFile(jarFile)
+        Enumeration<JarEntry> entries = srcJarFile.entries()
+
+        while (entries.hasMoreElements()) {
+            JarEntry srcJarEntry = entries.nextElement()
+
+            //com/github/gradle/mapping/hotfit$$Module$$RouterMapping.class
+            String srcJarEntryName = srcJarEntry.getName()
+
+            // 拿到jar包里面的输入流
+            InputStream srcJarEntryIs = srcJarFile.getInputStream(srcJarEntry)
+
+            // 构造目标jar文件里的文件实体
+            destJarOs.putNextEntry(new ZipEntry(srcJarEntryName))
+
+
+            if (!srcJarEntryName.contains("IUpdateImpl")) {//不做处理
+                destJarOs.write(IOUtils.toByteArray(srcJarEntryIs))
+            } else {
+                realWeaveCode(srcJarEntryIs, destJarOs)
+            }
+
+            srcJarEntryIs.close()
+        }
+
+        destJarOs.closeEntry()
+        destJarOs.close()
+        srcJarFile.close()
+    }
+
+
+    private static void realWeaveCode(InputStream inputStream, OutputStream outputStream) {
+        ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS)
+        ModifyClassVisitor classVisitor = new ModifyClassVisitor(classWriter)
+
+        ClassReader classReader = new ClassReader(inputStream)
+        classReader.accept(classVisitor, ClassReader.EXPAND_FRAMES)
+
+        outputStream.write(classWriter.toByteArray())
     }
 }
