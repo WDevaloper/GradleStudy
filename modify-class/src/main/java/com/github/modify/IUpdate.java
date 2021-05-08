@@ -1,4 +1,4 @@
-package com.github.gradle.mapping.update;
+package com.github.modify;
 
 import android.util.Log;
 

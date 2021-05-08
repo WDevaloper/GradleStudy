@@ -14,6 +14,7 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/buildSrc" />
             <option value="$PROJECT_DIR$/hotfit" />
+            <option value="$PROJECT_DIR$/modify-class" />
             <option value="$PROJECT_DIR$/router-annotations" />
             <option value="$PROJECT_DIR$/router-gradle-plugin" />
             <option value="$PROJECT_DIR$/router-gradle-plugin2" />

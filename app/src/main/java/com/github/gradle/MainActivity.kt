@@ -2,7 +2,7 @@ package com.github.gradle
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.github.gradle.mapping.update.IUpdateImpl
+import com.github.modify.IUpdateImpl
 import com.github.router.annotate.Destination
 
 

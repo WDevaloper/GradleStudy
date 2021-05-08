@@ -4,7 +4,7 @@ import org.objectweb.asm.ClassVisitor
 import org.objectweb.asm.MethodVisitor
 import org.objectweb.asm.Opcodes
 
-class ModifyClassVisitor extends ClassVisitor   {
+class ModifyClassVisitor extends ClassVisitor {
     ModifyClassVisitor(ClassVisitor classVisitor) {
         super(Opcodes.ASM7, classVisitor)
     }
@@ -17,12 +17,17 @@ class ModifyClassVisitor extends ClassVisitor   {
             String signature,
             String superName,
             String[] interfaces) {
-        //name>>>>com/github/gradle/mapping/update/IUpdateImpl , superName>>>>>com/github/gradle/mapping/update/IUpdate
-        // 修改为com.github.gradle.mapping.update.IUpdate2
-        String pendingClassName = "com/github/gradle/mapping/update/IUpdate2"
+        //name>>>>com/github/gradle/mapping/update/IUpdateImpl , superName>>>>>com/github/modify/IUpdate
+        // 修改为com/github/modify/IUpdate2
+        String pendingClassName = "com/github/modify/IUpdate2"
         println "将$name 的父类：$superName  修改为：$pendingClassName"
         println "signature>>>>>>>$signature"
-        super.visit(version, access, name, signature, pendingClassName, interfaces)
+        super.visit(version,
+                access,
+                name,
+                signature,
+                pendingClassName,
+                interfaces)
     }
 
 
@@ -44,7 +49,7 @@ class ModifyClassVisitor extends ClassVisitor   {
         methodVisitor.visitVarInsn(Opcodes.ALOAD, 0)
         methodVisitor.visitMethodInsn(
                 Opcodes.INVOKESPECIAL,
-                "com/github/gradle/mapping/update/IUpdate2",
+                "com/github/modify/IUpdate2",
                 "<init>",
                 "()V",
                 false)
