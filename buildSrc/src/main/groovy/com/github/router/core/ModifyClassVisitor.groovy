@@ -1,5 +1,6 @@
 package com.github.router.core
 
+import org.objectweb.asm.AnnotationVisitor
 import org.objectweb.asm.ClassVisitor
 import org.objectweb.asm.MethodVisitor
 import org.objectweb.asm.Opcodes
@@ -57,5 +58,11 @@ class ModifyClassVisitor extends ClassVisitor {
         methodVisitor.visitMaxs(1, 1)
         methodVisitor.visitEnd()
         return methodVisitor
+    }
+
+    @Override
+    AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
+        println "descriptor>>>>> $descriptor"
+        return super.visitAnnotation(descriptor, visible)
     }
 }

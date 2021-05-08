@@ -69,8 +69,6 @@ class ModifyClassExtendsTransform extends Transform {
                 )
 
                 byteCodeBuilder.weaveByteCodeFromJatFile(jarInput.file, destFile)
-
-                FileUtils.copyFile(jarInput.file, destFile)
             }
         }
     }
