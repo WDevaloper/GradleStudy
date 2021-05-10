@@ -67,6 +67,11 @@ android {
             applicationIdSuffix ".baidu" // 进程ID 而Manifest中的PackageName 是R文件的包名
             versionName "1.0.6.6"
             manifestPlaceholders = [CHANNEL: "baidu"]
+
+            //build\generated\res\resValues\baidu\debug\values\gradleResValues.xml
+            resValue("string", "welcome", "Hello")
+            //build\generated\source\buildConfig\baidu\debug\com\github\gradle\BuildConfig.java
+            buildConfigField("String", "BUILD_TIME", "\"${System.currentTimeMillis()}\"")
         }
     }
 
@@ -103,9 +108,18 @@ dependencies {
 //kapt {
 //    arguments {
 //        arg("MODULE_NAME", project.getName())
+
 //        arg("root_project_dir", rootProject.projectDir.absolutePath)
 //    }
 //}
+
+
+configurations.all { Configuration configuration ->
+    configuration.resolutionStrategy.eachDependency { DependencyResolveDetails resolveDetails ->
+        def requested = resolveDetails.requested.toString()
+        println "requested>>> $requested"
+    }
+}
 
 tasks.withType(JavaCompile) {
     options.encoding = "UTF-8"

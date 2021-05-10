@@ -35,8 +35,9 @@ class ModifyClassVisitor extends ClassVisitor {
                 signature,
                 pendingClassName,
                 interfaces)
+
     }
-    
+
     @Override
     MethodVisitor visitMethod(
             int access,
