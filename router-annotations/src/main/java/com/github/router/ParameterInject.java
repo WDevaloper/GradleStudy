@@ -1,4 +1,4 @@
-package com.github.router.runtime;
+package com.github.router;
 
 public interface ParameterInject {
     void inject(Object target);

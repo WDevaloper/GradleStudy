@@ -1,6 +1,6 @@
 package com.github.gradle;
 
-import com.github.router.runtime.ParameterInject;
+import com.github.router.ParameterInject;
 
 public class TestActivity$$Parameter implements ParameterInject {
 

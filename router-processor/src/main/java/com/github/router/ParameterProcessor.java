@@ -107,7 +107,7 @@ public class ParameterProcessor extends AbstractProcessor {
             StringBuilder codeBuffer = new StringBuilder();
             codeBuffer.append("package ").append(packageName).append(";\n\n");
             codeBuffer.append("public class ").append(generatorClassName)
-                    .append(" implements ").append("com.github.router.runtime.ParameterInject")
+                    .append(" implements ").append("com.github.router.ParameterInject")
                     .append(" {\n\n");
 
             codeBuffer.append("    @Override\n")
