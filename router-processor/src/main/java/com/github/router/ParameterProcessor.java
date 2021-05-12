@@ -154,30 +154,43 @@ public class ParameterProcessor extends AbstractProcessor {
 
         // 被@Parameter注解的属性名
         String filedName = paramElement.getSimpleName().toString();
+
         Parameter parameter = paramElement.getAnnotation(Parameter.class);
         String name = parameter.name();
+        String desc = parameter.desc();
+
         if (!EmptyUtils.isEmpty(name)) {
             filedName = name;
         }
 
         if (ProcessorUtils.isSubtype(superTypeElement,
                 ProcessorUtils.getActivityTypeElement())) {
-            processorActivity(codeBuffer, paramElement, typeMirror, fileType, filedName);
+            processorActivity2(codeBuffer, paramElement, filedName);
         } else if (ProcessorUtils.isSubtype(superTypeElement,
                 ProcessorUtils.getAppFragmentTypeElement()) ||
                 ProcessorUtils.isSubtype(superTypeElement,
                         ProcessorUtils.getAndroidxFragmentTypeElement())) {
-            processorFragment(codeBuffer, paramElement, filedName);
+            processorFragment(codeBuffer, paramElement, filedName, desc);
         }
     }
 
 
-    private void processorFragment(StringBuilder codeBuffer, Element paramElement, String filedName) {
+    private void processorFragment(StringBuilder codeBuffer, Element paramElement, String filedName, String desc) {
         codeBuffer.append("        injectObject.")
                 .append(filedName)
                 .append(" = (")
                 .append(paramElement.asType().toString())
                 .append(") bundle.get(\"")
+                .append(filedName)
+                .append("\");\n");
+    }
+
+    private void processorActivity2(StringBuilder codeBuffer, Element paramElement, String filedName) {
+        codeBuffer.append("        injectObject.")
+                .append(filedName)
+                .append(" = (")
+                .append(paramElement.asType().toString())
+                .append(") injectObject.getIntent().getExtras().get(\"")
                 .append(filedName)
                 .append("\");\n");
     }

@@ -25,7 +25,7 @@ public class AptActivity extends AppCompatActivity {
     @Parameter
     long long_param;
 
-    @Parameter
+    @Parameter(desc = "啦啦啦")
     Long long_param2;
 
 
