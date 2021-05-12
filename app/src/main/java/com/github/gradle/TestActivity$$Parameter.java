@@ -12,5 +12,7 @@ public class TestActivity$$Parameter implements ParameterInject {
         injectObject.param = injectObject.getIntent().getStringExtra("param");
 
         injectObject.param2 = injectObject.getIntent().getIntExtra("param", 0);
+
+        injectObject.getIntent().getSerializableExtra("");
     }
 }

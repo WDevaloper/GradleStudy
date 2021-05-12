@@ -14,7 +14,7 @@ class MainActivity : AppCompatActivity() {
     @JvmField
     var param: String? = null
 
-    @Parameter(name = "param")
+    @Parameter(name = "param2")
     @JvmField
     var param2 = 0
 

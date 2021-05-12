@@ -9,11 +9,11 @@ import com.github.router.annotate.Parameter
 @Destination(url = "/user/UserActivity", description = "用户信息")
 class UserActivity : AppCompatActivity() {
 
-    @Parameter(name = "param")
+    @Parameter(name = "userName")
     @JvmField
     var userName: String? = null
 
-    @Parameter(name = "param")
+    @Parameter(name = "age")
     @JvmField
     var age: Int = 0
 

@@ -15,7 +15,10 @@ public class Constants {
     public final static String ROUTER_MAPPING_DOC_DIR = "router_mapping";
     public final static String ROUTER_MAPPING_DOC_NAME_SUFFIX = "_mapping.json";
 
-
-    // Activity类型
+    // Activity全类名
     public static final String ACTIVITY = "android.app.Activity";
+    public static final String PARCELABLE = "android.os.Parcelable";
+    public static final String SERIALIZABLE = "java.io.Serializable";
+    public static final String ANDROIDX_FRAGMENT = "androidx.fragment.app.Fragment";
+    public static final String APP_FRAGMENT = "android.app.Fragment";
 }

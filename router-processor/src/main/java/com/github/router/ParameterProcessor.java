@@ -25,6 +25,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 
 
@@ -34,7 +35,14 @@ public class ParameterProcessor extends AbstractProcessor {
     private Filer filer;
     private Elements elements;
     private Messager messager;
+    private Types typeUtils;
 
+
+    private TypeElement activityTypeElement;
+    private TypeElement appFragmentTypeElement;
+    private TypeElement androidXFragmentTypeElement;
+    private TypeElement parcelableTypeElement;
+    private TypeElement serializableTypeElement;
 
     //临时map存储，用来存放@Parameter注解的属性集合，生成类文件时遍历
     //key : 类节点  value：被@Parameter注解的属性集合
@@ -46,6 +54,15 @@ public class ParameterProcessor extends AbstractProcessor {
         filer = processingEnvironment.getFiler();
         messager = processingEnv.getMessager();
         elements = processingEnvironment.getElementUtils();
+        typeUtils = processingEnvironment.getTypeUtils();
+
+
+        //通过全类名获取对应TypeElement
+        activityTypeElement = elements.getTypeElement(Constants.ACTIVITY);
+        appFragmentTypeElement = elements.getTypeElement(Constants.APP_FRAGMENT);
+        androidXFragmentTypeElement = elements.getTypeElement(Constants.ANDROIDX_FRAGMENT);
+        parcelableTypeElement = elements.getTypeElement(Constants.PARCELABLE);
+        serializableTypeElement = elements.getTypeElement(Constants.SERIALIZABLE);
     }
 
     @Override
@@ -114,25 +131,9 @@ public class ParameterProcessor extends AbstractProcessor {
                     .append("    public void inject(Object target) {\n").append("        ")
                     .append(typeName).append(" injectObject = (").append(typeName).append(") target;\n");
 
+
             for (Element paramElement : entry.getValue()) {
-                //被@Parameter注解属性信息
-                TypeMirror typeMirror = paramElement.asType();
-                int fileType = typeMirror.getKind().ordinal();
-                // 被@Parameter注解的属性名
-                String filedName = paramElement.getSimpleName().toString();
-                if (String.class.getName().equals(typeMirror.toString())) {
-                    codeBuffer.append("        injectObject.")
-                            .append(filedName)
-                            .append(" = injectObject.getIntent().getStringExtra(\"")
-                            .append(filedName)
-                            .append("\");\n");
-                } else if (fileType == TypeKind.INT.ordinal()) {
-                    codeBuffer.append("        injectObject.")
-                            .append(filedName)
-                            .append(" = injectObject.getIntent().getIntExtra(\"")
-                            .append(filedName)
-                            .append("\", 0);\n");
-                }
+                createInject(codeBuffer, paramElement);
             }
 
             codeBuffer.append("    }\n");
@@ -153,6 +154,74 @@ public class ParameterProcessor extends AbstractProcessor {
         }
 
         return true;
+    }
+
+    private void createInject(StringBuilder codeBuffer, Element paramElement) {
+        //被@Parameter注解属性信息
+        TypeMirror typeMirror = paramElement.asType();
+        // 获取字段的类型
+        int fileType = typeMirror.getKind().ordinal();
+
+        // 被@Parameter注解的属性名
+        String filedName = paramElement.getSimpleName().toString();
+        Parameter parameter = paramElement.getAnnotation(Parameter.class);
+        String name = parameter.name();
+        if (!EmptyUtils.isEmpty(name)) {
+            filedName = name;
+        }
+
+        if (String.class.getName().equals(typeMirror.toString())) {
+            codeBuffer.append("        injectObject.")
+                    .append(filedName)
+                    .append(" = injectObject.getIntent().getStringExtra(\"")
+                    .append(filedName)
+                    .append("\");\n");
+        } else if (fileType == TypeKind.INT.ordinal()) {
+            codeBuffer.append("        injectObject.")
+                    .append(filedName)
+                    .append(" = injectObject.getIntent().getIntExtra(\"")
+                    .append(filedName)
+                    .append("\", 0);\n");
+        } else if (fileType == TypeKind.BOOLEAN.ordinal()) {
+            codeBuffer.append("        injectObject.")
+                    .append(filedName)
+                    .append(" = injectObject.getIntent().getBooleanExtra(\"")
+                    .append(filedName)
+                    .append("\", false);\n");
+        } else if (fileType == TypeKind.DOUBLE.ordinal()) {
+            codeBuffer.append("        injectObject.")
+                    .append(filedName)
+                    .append(" = injectObject.getIntent().getDoubleExtra(\"")
+                    .append(filedName)
+                    .append("\", 0.0);\n");
+        } else if (fileType == TypeKind.FLOAT.ordinal()) {
+            codeBuffer.append("        injectObject.")
+                    .append(filedName)
+                    .append(" = injectObject.getIntent().getFloatExtra(\"")
+                    .append(filedName)
+                    .append("\", 0);\n");
+        } else if (fileType == TypeKind.LONG.ordinal()) {
+            codeBuffer.append("        injectObject.")
+                    .append(filedName)
+                    .append(" = injectObject.getIntent().getLongExtra(\"")
+                    .append(filedName)
+                    .append("\", 0);\n");
+        } else if (typeUtils.isSubtype(typeMirror, parcelableTypeElement.asType())) {//Parcelable的子类 如Bundle
+            codeBuffer.append("        injectObject.")
+                    .append(filedName)
+                    .append(" = injectObject.getIntent().getParcelableExtra(\"")
+                    .append(filedName)
+                    .append("\");\n");
+        } else if (typeUtils.isSubtype(typeMirror, serializableTypeElement.asType())) {
+            //Serializable的实现类，declaredType继承至ReferenceType即应用类型,注解处理代码也不多
+            // 需要注意的是在生成类型时int[]、 String[]、ArrayList和Map实现了Serializable
+            codeBuffer.append("        injectObject.")
+                    .append(filedName).append(" =(")
+                    .append(paramElement.asType().toString())
+                    .append(") injectObject.getIntent().getSerializableExtra(\"")
+                    .append(filedName)
+                    .append("\");\n");
+        }
     }
 
     private void collectValueParam(Set<? extends Element> allParams) {
