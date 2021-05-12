@@ -22,7 +22,6 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
@@ -56,7 +55,7 @@ public class DestinationProcessor extends AbstractProcessor {
         filer = processingEnvironment.getFiler();
         rootProjectDir = processingEnvironment.getOptions().get(Constants.ROOT_PROJECT_DIR);
         moduleName = processingEnvironment.getOptions().get(Constants.MODULE_NAME);
-        Helper.init(typeUtils);
+        ProcessorUtils.init(typeUtils,elements);
         //通过类名获取Activity Element类型
         activityElement = elements.getTypeElement(Constants.ACTIVITY);
     }
@@ -119,7 +118,7 @@ public class DestinationProcessor extends AbstractProcessor {
                 continue;
             }
 
-            if (!Helper.isSubtype(element, activityElement)) {
+            if (!ProcessorUtils.isSubtype(element, activityElement)) {
                 messager.printMessage(Diagnostic.Kind.ERROR, "The " + typeElement.getQualifiedName() + " not inheriting Activity");
             }
 

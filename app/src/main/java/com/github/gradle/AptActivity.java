@@ -16,32 +16,32 @@ import java.util.List;
 public class AptActivity extends AppCompatActivity {
 
 
-    @Parameter(name = "param")
+    @Parameter
     String param;
 
-    @Parameter(name = "param2")
+    @Parameter
     int param2;
 
-    @Parameter(name = "long_param")
+    @Parameter
     long long_param;
 
-    @Parameter(name = "long_param2")
+    @Parameter
     Long long_param2;
 
 
-    @Parameter(name = "int_param")
+    @Parameter
     int[] int_param;
 
 
-    @Parameter(name = "string_param")
+    @Parameter
     String[] string_param;
 
 
-    @Parameter(name = "list_param")
+    @Parameter
     List<User>[] list_param;
 
 
-    @Parameter(name = "user")
+    @Parameter
     User user;
 
     @Parameter(name = "person")

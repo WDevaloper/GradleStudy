@@ -21,4 +21,5 @@ public class Constants {
     public static final String SERIALIZABLE = "java.io.Serializable";
     public static final String ANDROIDX_FRAGMENT = "androidx.fragment.app.Fragment";
     public static final String APP_FRAGMENT = "android.app.Fragment";
+    public static final String BUNDLE  = "android.os.Bundle";
 }

@@ -4,7 +4,6 @@ import com.github.router.annotate.Parameter;
 import com.google.auto.service.AutoService;
 
 import java.io.Writer;
-import java.lang.annotation.ElementType;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -33,16 +32,7 @@ import javax.tools.Diagnostic;
 public class ParameterProcessor extends AbstractProcessor {
 
     private Filer filer;
-    private Elements elements;
     private Messager messager;
-    private Types typeUtils;
-
-
-    private TypeElement activityTypeElement;
-    private TypeElement appFragmentTypeElement;
-    private TypeElement androidXFragmentTypeElement;
-    private TypeElement parcelableTypeElement;
-    private TypeElement serializableTypeElement;
 
     //临时map存储，用来存放@Parameter注解的属性集合，生成类文件时遍历
     //key : 类节点  value：被@Parameter注解的属性集合
@@ -53,16 +43,7 @@ public class ParameterProcessor extends AbstractProcessor {
         super.init(processingEnvironment);
         filer = processingEnvironment.getFiler();
         messager = processingEnv.getMessager();
-        elements = processingEnvironment.getElementUtils();
-        typeUtils = processingEnvironment.getTypeUtils();
-
-
-        //通过全类名获取对应TypeElement
-        activityTypeElement = elements.getTypeElement(Constants.ACTIVITY);
-        appFragmentTypeElement = elements.getTypeElement(Constants.APP_FRAGMENT);
-        androidXFragmentTypeElement = elements.getTypeElement(Constants.ANDROIDX_FRAGMENT);
-        parcelableTypeElement = elements.getTypeElement(Constants.PARCELABLE);
-        serializableTypeElement = elements.getTypeElement(Constants.SERIALIZABLE);
+        ProcessorUtils.init(processingEnvironment.getTypeUtils(), processingEnvironment.getElementUtils());
     }
 
     @Override
@@ -111,11 +92,11 @@ public class ParameterProcessor extends AbstractProcessor {
         //String packageName = packageElement.getQualifiedName().toString();
 
         for (Map.Entry<TypeElement, List<Element>> entry : tempParameterMap.entrySet()) {
-            TypeElement type = (TypeElement) entry.getKey();
-            String typeName = type.getQualifiedName().toString();
-            String simpleTypeName = type.getSimpleName().toString();
+            TypeElement superTypeElement = (TypeElement) entry.getKey();
+            String typeName = superTypeElement.getQualifiedName().toString();
+            String simpleTypeName = superTypeElement.getSimpleName().toString();
 
-            PackageElement packageElement = (PackageElement) type.getEnclosingElement();
+            PackageElement packageElement = (PackageElement) superTypeElement.getEnclosingElement();
             String packageName = packageElement.getQualifiedName().toString();
 
             //生成的类名
@@ -131,9 +112,18 @@ public class ParameterProcessor extends AbstractProcessor {
                     .append("    public void inject(Object target) {\n").append("        ")
                     .append(typeName).append(" injectObject = (").append(typeName).append(") target;\n");
 
+            if (ProcessorUtils.isSubtype(superTypeElement,
+                    ProcessorUtils.getAppFragmentTypeElement()) ||
+                    ProcessorUtils.isSubtype(superTypeElement,
+                            ProcessorUtils.getAndroidxFragmentTypeElement())) {
+                codeBuffer.append("        ")
+                        .append(ProcessorUtils.getBundleTypeElement().getQualifiedName())
+                        .append(" bundle = injectObject.getArguments();\n");
+            }
+
 
             for (Element paramElement : entry.getValue()) {
-                createInject(codeBuffer, paramElement);
+                createInject(superTypeElement, codeBuffer, paramElement);
             }
 
             codeBuffer.append("    }\n");
@@ -156,7 +146,7 @@ public class ParameterProcessor extends AbstractProcessor {
         return true;
     }
 
-    private void createInject(StringBuilder codeBuffer, Element paramElement) {
+    private void createInject(TypeElement superTypeElement, StringBuilder codeBuffer, Element paramElement) {
         //被@Parameter注解属性信息
         TypeMirror typeMirror = paramElement.asType();
         // 获取字段的类型
@@ -170,7 +160,36 @@ public class ParameterProcessor extends AbstractProcessor {
             filedName = name;
         }
 
-        if (String.class.getName().equals(typeMirror.toString())) {
+        if (ProcessorUtils.isSubtype(superTypeElement,
+                ProcessorUtils.getActivityTypeElement())) {
+            processorActivity(codeBuffer, paramElement, typeMirror, fileType, filedName);
+        } else if (ProcessorUtils.isSubtype(superTypeElement,
+                ProcessorUtils.getAppFragmentTypeElement()) ||
+                ProcessorUtils.isSubtype(superTypeElement,
+                        ProcessorUtils.getAndroidxFragmentTypeElement())) {
+            processorFragment(codeBuffer, paramElement, filedName);
+        }
+    }
+
+
+    private void processorFragment(StringBuilder codeBuffer, Element paramElement, String filedName) {
+        codeBuffer.append("        injectObject.")
+                .append(filedName)
+                .append(" = (")
+                .append(paramElement.asType().toString())
+                .append(") bundle.get(\"")
+                .append(filedName)
+                .append("\");\n");
+    }
+
+    private void processorActivity(
+            StringBuilder codeBuffer,
+            Element paramElement,
+            TypeMirror typeMirror,
+            int fileType,
+            String filedName) {
+        if (typeMirror.toString().equals(
+                ProcessorUtils.getStringTypeElement().getQualifiedName().toString())) {
             codeBuffer.append("        injectObject.")
                     .append(filedName)
                     .append(" = injectObject.getIntent().getStringExtra(\"")
@@ -206,13 +225,15 @@ public class ParameterProcessor extends AbstractProcessor {
                     .append(" = injectObject.getIntent().getLongExtra(\"")
                     .append(filedName)
                     .append("\", 0);\n");
-        } else if (typeUtils.isSubtype(typeMirror, parcelableTypeElement.asType())) {//Parcelable的子类 如Bundle
+        } else if (ProcessorUtils.isSubtype(paramElement,
+                ProcessorUtils.getParcelableTypeElement())) {//Parcelable的子类 如Bundle
             codeBuffer.append("        injectObject.")
                     .append(filedName)
                     .append(" = injectObject.getIntent().getParcelableExtra(\"")
                     .append(filedName)
                     .append("\");\n");
-        } else if (typeUtils.isSubtype(typeMirror, serializableTypeElement.asType())) {
+        } else if (ProcessorUtils.isSubtype(paramElement,
+                ProcessorUtils.getSerializableTypeElement())) {
             //Serializable的实现类，declaredType继承至ReferenceType即应用类型,注解处理代码也不多
             // 需要注意的是在生成类型时int[]、 String[]、ArrayList和Map实现了Serializable
             codeBuffer.append("        injectObject.")
