@@ -19,6 +19,11 @@ class MainActivity : AppCompatActivity() {
     @JvmField
     var param2 = 0
 
+
+    @Parameter(name = "param3")
+    @JvmField
+    var param3: Long = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
