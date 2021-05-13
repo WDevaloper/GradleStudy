@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.github.modify.IUpdateImpl
 import com.github.router.annotate.Destination
 import com.github.router.annotate.Parameter
+import com.github.router.runtime.Router
 
 
 @Destination(url = "/app/MainActivity", description = "首页")
@@ -31,17 +32,16 @@ class MainActivity : AppCompatActivity() {
         val iUpdateImpl = IUpdateImpl()
         iUpdateImpl.update()
 
-        val intent = Intent(this, AptActivity::class.java)
-        intent.putExtra("param", "hello apt")
-        intent.putExtra("person", Person())
-        intent.putExtra("param2", 1)
-        intent.putExtra("long_param", 2L)
-        intent.putExtra("long_param2", 2L)
-        intent.putExtra("int_param", intArrayOf(1, 2, 3))
-        intent.putExtra("string_param", arrayOf("qwe"))
-        intent.putExtra("list_param", arrayListOf(User()))
-        intent.putExtra("user", User())
-        intent.putExtra("person", Person())
-        startActivity(intent)
+        Router.build("/app/AptActivity")
+            .withString("param", "hello apt")
+            .withSerializable("person", Person())
+            .withInt("param2", 1)
+            .withLong("long_param", 2L)
+            .withLong("long_param2", 2L)
+            .withIntArray("int_param", intArrayOf(1, 2, 3))
+            .withStringArray("string_param", arrayOf("qwe"))
+            .withParcelableArrayList("list_param", arrayListOf(User()))
+            .withParcelable("user", User())
+            .navigation(this)
     }
 }
