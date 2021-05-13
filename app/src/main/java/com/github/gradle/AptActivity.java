@@ -9,12 +9,14 @@ import android.util.Log;
 import com.github.router.annotate.Destination;
 import com.github.router.annotate.DestinationMethod;
 import com.github.router.annotate.Parameter;
+import com.github.router.runtime.Router;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Destination(url = "/app/AptActivity", description = "路由测试")
 public class AptActivity extends AppCompatActivity {
-
+    private static final String TAG = AptActivity.class.getSimpleName();
 
     @Parameter
     String param;
@@ -38,7 +40,7 @@ public class AptActivity extends AppCompatActivity {
 
 
     @Parameter
-    List<User>[] list_param;
+    List<User> list_param;
 
 
     @Parameter
@@ -52,8 +54,18 @@ public class AptActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_apt);
-        Log.e("AptActivity", "onCreate change");
 
-        new AptActivity$$Parameter().inject(this);
+        Router.inject(this);
+
+
+        Log.e(TAG, "param >>> " + param);
+        Log.e(TAG, "param2 >>> " + param2);
+        Log.e(TAG, "long_param >>> " + long_param);
+        Log.e(TAG, "long_param2 >>> " + long_param2);
+        Log.e(TAG, "int_param >>> " + Arrays.toString(int_param));
+        Log.e(TAG, "string_param >>> " + Arrays.toString(string_param));
+        Log.e(TAG, "list_param >>> " + list_param);
+        Log.e(TAG, "user >>> " + user);
+        Log.e(TAG, "person >>> " + person);
     }
 }

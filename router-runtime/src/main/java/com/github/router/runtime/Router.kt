@@ -7,6 +7,8 @@ object Router {
 
     private const val TAG: String = "RouterTag"
 
+    private const val PARAMETER_SUFFIX = "\$\$Parameter"
+
     private const val MAPPING_GENERATE: String =
         "com.github.router.mapping.generated.RouterMapping"
 
@@ -25,6 +27,17 @@ object Router {
             }
         } catch (ex: Throwable) {
             Log.i(TAG, "init: Error while router: $ex")
+        }
+    }
+
+    @JvmStatic
+    fun inject(target: Any) {
+        try {
+            val className = "${target.javaClass.name}$PARAMETER_SUFFIX"
+            (Class.forName(className).newInstance() as ParameterInject).inject(target)
+        } catch (ex: Throwable) {
+            ex.printStackTrace()
+            Log.e(TAG, "Error while inject : ${ex.message}")
         }
     }
 }

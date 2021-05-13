@@ -105,7 +105,7 @@ public class ParameterProcessor extends AbstractProcessor {
             StringBuilder codeBuffer = new StringBuilder();
             codeBuffer.append("package ").append(packageName).append(";\n\n");
             codeBuffer.append("public class ").append(generatorClassName)
-                    .append(" implements ").append("com.github.router.ParameterInject")
+                    .append(" implements ").append("com.github.router.runtime.ParameterInject")
                     .append(" {\n\n");
 
             codeBuffer.append("    @Override\n")
@@ -159,9 +159,7 @@ public class ParameterProcessor extends AbstractProcessor {
         String name = parameter.name();
         String desc = parameter.desc();
 
-        if (!EmptyUtils.isEmpty(name)) {
-            filedName = name;
-        }
+        if (!EmptyUtils.isEmpty(name)) filedName = name;
 
         if (ProcessorUtils.isSubtype(superTypeElement,
                 ProcessorUtils.getActivityTypeElement())) {
@@ -176,31 +174,32 @@ public class ParameterProcessor extends AbstractProcessor {
 
 
     private void processorFragment(StringBuilder codeBuffer, Element paramElement, String filedName, String desc) {
-        codeBuffer.append("        injectObject.")
+        codeBuffer.append("        Object ").append(filedName).append(" = bundle.get(\"")
                 .append(filedName)
+                .append("\");\n")
+                .append("        if (").append(filedName).append(" != null) {\n")
+                .append("            injectObject.").append(filedName)
                 .append(" = (")
                 .append(paramElement.asType().toString())
-                .append(") bundle.get(\"")
+                .append(") ")
                 .append(filedName)
-                .append("\");\n");
+                .append(";\n")
+                .append("        }\n\n");
     }
 
     private void processorActivity2(StringBuilder codeBuffer, Element paramElement, String filedName) {
-        codeBuffer.append("        injectObject.")
+        codeBuffer.append("        Object ")
                 .append(filedName)
-                .append(" = (")
-                .append(paramElement.asType().toString())
-                .append(") injectObject.getIntent().getExtras().get(\"")
+                .append(" = injectObject.getIntent().getExtras().get(\"")
                 .append(filedName)
-                .append("\");\n");
+                .append("\");\n").append("        if (").append(filedName)
+                .append(" != null) {\n").append("            injectObject.")
+                .append(filedName).append(" = (")
+                .append(paramElement.asType().toString()).append(") ").append(filedName).append(";\n")
+                .append("        }\n\n");
     }
 
-    private void processorActivity(
-            StringBuilder codeBuffer,
-            Element paramElement,
-            TypeMirror typeMirror,
-            int fileType,
-            String filedName) {
+    private void processorActivity(StringBuilder codeBuffer, Element paramElement, TypeMirror typeMirror, int fileType, String filedName) {
         if (typeMirror.toString().equals(
                 ProcessorUtils.getStringTypeElement().getQualifiedName().toString())) {
             codeBuffer.append("        injectObject.")

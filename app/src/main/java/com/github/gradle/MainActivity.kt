@@ -1,5 +1,6 @@
 package com.github.gradle
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.github.modify.IUpdateImpl
@@ -24,5 +25,18 @@ class MainActivity : AppCompatActivity() {
 
         val iUpdateImpl = IUpdateImpl()
         iUpdateImpl.update()
+
+        val intent = Intent(this, AptActivity::class.java)
+        intent.putExtra("param", "hello apt")
+        intent.putExtra("person", Person())
+        intent.putExtra("param2", 1)
+        intent.putExtra("long_param", 2L)
+        intent.putExtra("long_param2", 2L)
+        intent.putExtra("int_param", intArrayOf(1, 2, 3))
+        intent.putExtra("string_param", arrayOf("qwe"))
+        intent.putExtra("list_param", arrayListOf(User()))
+        intent.putExtra("user", User())
+        intent.putExtra("person", Person())
+        startActivity(intent)
     }
 }
