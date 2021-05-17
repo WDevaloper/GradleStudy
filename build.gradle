@@ -1,5 +1,9 @@
 // 子工程公用的配置
 
+ext {
+    isAlone = false
+}
+
 buildscript {
     ext.kotlin_version = "1.4.31"
     repositories {
@@ -34,7 +38,6 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
-
 
 
 tasks.withType(JavaCompile) {
