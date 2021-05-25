@@ -1,3 +1,25 @@
+pluginManagement {
+    // 对应PluginManagementSpec类
+    repositories { // 管理Plugin Repository(仓库)
+        google { url "https://maven.aliyun.com/repository/gradle-plugin" }
+    }
+
+    resolutionStrategy {
+        eachPlugin {   // 接收一个PluginResolveDetails类型的闭包，requested可以获得plugin的信息
+            println "${requested.id} → ${requested.module} → ${requested.version}"
+            // 替换模块
+            if (requested.id.namespace == "org.jetbrains.kotlin") {
+                useModule("org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin:${requested.version}")
+            }
+            // 统一插件版本
+            if (requested.id.id == "org.jetbrains.kotlin.jvm") {
+                useVersion("1.3.71")
+            }
+        }
+    }
+}
+
+
 include ':user_export'
 include ':modify-class'
 include ':user'
@@ -10,7 +32,10 @@ include ':router-annotations'
 include ':router-processor'
 rootProject.name = "GradleStudy"
 
+project(":user").projectDir
+
 println("-----我是settings.gradle  ---- ${rootProject.projectDir}")
+
 
 // 添加构建生命周期监听
 gradle.addBuildListener(new BuildListener() {
@@ -48,8 +73,8 @@ gradle.addBuildListener(new BuildListener() {
     void projectsEvaluated(Gradle gradle) {
         println("[life-cycle] ---- 所有project配置阶段完成")
     }
-
     //构建结束
+
     @Override
     void buildFinished(BuildResult result) {
         println("[life-cycle] ---- 构建结束")
@@ -60,3 +85,33 @@ gradle.addBuildListener(new BuildListener() {
 gradle.taskGraph.beforeTask { Task task ->
     println("all task >>>" + task.name)
 }
+
+println "gradleHomeDir >>>"+gradle.gradleHomeDir
+println "gradleHomeDir >>>"+gradle.gradleUserHomeDir
+
+
+gradle.afterProject {
+    println '>>>>>>>gradle.afterProject'
+}
+
+gradle.beforeProject {
+    println '>>>>>>>gradle.beforeProject'
+}
+
+gradle.projectsLoaded {
+    println '>>>>>>>gradle.projectsLoaded'
+}
+gradle.projectsEvaluated {
+    println '>>>>>>>gradle.projectsEvaluated'
+}
+
+gradle.buildStarted {
+    println '>>>>>>>gradle.buildStarted'
+}
+gradle.settingsEvaluated {
+    println '>>>>>>>gradle.settingsEvaluated'
+}
+gradle.buildFinished {
+    println '>>>>>>>gradle.buildFinished'
+}
+

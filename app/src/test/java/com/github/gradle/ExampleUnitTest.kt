@@ -1,5 +1,7 @@
 package com.github.gradle
 
+import com.github.gradle.mapping.StartTest
+import com.github.gradle.mapping.StartTestTest
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -12,6 +14,6 @@ import org.junit.Assert.*
 class ExampleUnitTest {
     @Test
     fun addition_isCorrect() {
-        assertEquals(4, 2 + 2)
+        StartTest.main(null)
     }
 }

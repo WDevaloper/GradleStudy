@@ -1,0 +1,4 @@
+println "我是脚本插件 script_plugin.gradle"
+
+
+println("脚本插件")

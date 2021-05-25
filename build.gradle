@@ -1,5 +1,4 @@
 // 子工程公用的配置
-
 ext {
     isAlone = false
 }
@@ -26,6 +25,7 @@ buildscript {
         // in the individual module build.gradle files
     }
 
+
 }
 
 allprojects {
@@ -44,4 +44,4 @@ tasks.withType(JavaCompile) {
     options.encoding = "UTF-8"
 }
 
-println("根 build.gradle")
+println("Root build.gradle")

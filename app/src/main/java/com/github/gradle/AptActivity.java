@@ -67,6 +67,5 @@ public class AptActivity extends AppCompatActivity {
         Log.e(TAG, "list_param >>> " + list_param);
         Log.e(TAG, "user >>> " + user);
         Log.e(TAG, "person >>> " + person);
-        startService(new Intent())
     }
 }

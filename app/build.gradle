@@ -231,4 +231,24 @@ test1.finalizedBy(test2)
 
 println "我是app.gradle"
 
-apply from: rootProject.file("other.gradle")
+apply from: rootProject.file("script_plugin.gradle")
+
+Script
+
+tasks.getByName("assemble") { Task task ->
+    task.doLast {
+        copy { CopySpec copySpecs->
+            // 既可以拷贝文件，也可以拷贝文件夹
+            // 这里是将 app moudle 下生成的 apk 目录拷贝到
+            // 根工程下的 build 目录
+            copySpecs.from file("build/outputs/apk/baidu/debug")
+            copySpecs.into getRootDir().path+ "/apk/"
+
+
+            copySpecs.rename('app-baidu-debug.apk', 'baidu.apk')
+            copySpecs.exclude {  ->
+                details.file.name.contains('release') }
+        }
+    }
+}
+
