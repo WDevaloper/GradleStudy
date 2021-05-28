@@ -233,22 +233,98 @@ println "我是app.gradle"
 
 apply from: rootProject.file("script_plugin.gradle")
 
-Script
-
 tasks.getByName("assemble") { Task task ->
     task.doLast {
-        copy { CopySpec copySpecs->
+        copy { CopySpec copySpecs ->
             // 既可以拷贝文件，也可以拷贝文件夹
             // 这里是将 app moudle 下生成的 apk 目录拷贝到
             // 根工程下的 build 目录
             copySpecs.from file("build/outputs/apk/baidu/debug")
-            copySpecs.into getRootDir().path+ "/apk/"
+            copySpecs.into getRootDir().path + "/apk/"
 
 
             copySpecs.rename('app-baidu-debug.apk', 'baidu.apk')
-            copySpecs.exclude {  ->
-                details.file.name.contains('release') }
+            copySpecs.exclude { ->
+                details.file.name.contains('release')
+            }
         }
     }
 }
 
+
+allprojects { Project project ->
+    println '>>>>>>>project.allprojects' + project.getName()
+}
+
+
+subprojects { org.gradle.api.Project project ->
+    println '>>>>>>>project.subprojects' + project.getName()
+}
+
+task myTask
+task myTask1 { Task task -> }
+task myTask2(type: JavaCompile)
+task myTask3(type: JavaCompile) { Task task ->
+    task.doFirst {
+
+    }
+    task.doLast {
+
+    }
+}
+
+
+task myTaskAction { Task task ->
+    task.doFirst(new Action<Task>() {
+        @Override
+        void execute(Task taskAction) {
+            println("execute task action>>>>>>>>>>>>>>>>操作")
+        }
+    })
+}
+
+
+task myTaskClosure { Task task ->
+    task.doFirst {
+
+    }
+    task.doLast {
+        println("execute task closure>>>>>>>>>>>>>>>>操作")
+    }
+}
+
+
+task myTaskDepends { Task task ->
+    task.doLast {
+        println("execute task: " + task.getName())
+    }
+}
+
+task myTaskDepends1 { Task task ->
+    task.dependsOn("myTaskDepends")
+    task.doLast {
+        println("execute task: " + task.getName())
+    }
+}
+
+
+task myTaskDepends2 { Task task ->
+    task.setDependsOn([myTaskDepends, "myTaskDepends1"])
+    task.doLast {
+        println("execute task: " + task.getName())
+    }
+}
+
+
+task myTaskX { Task task ->
+    task.doLast {
+        println("execute task: " + task.getName())
+    }
+}
+
+task myTaskY { Task task ->
+    task.doLast {
+        println("execute task: " + task.getName())
+    }
+}
+myTaskY.mustRunAfter(myTaskX)

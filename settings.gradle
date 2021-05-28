@@ -94,9 +94,12 @@ gradle.afterProject {
     println '>>>>>>>gradle.afterProject'
 }
 
+
+
 gradle.beforeProject {
     println '>>>>>>>gradle.beforeProject'
 }
+
 
 gradle.projectsLoaded {
     println '>>>>>>>gradle.projectsLoaded'
@@ -106,6 +109,7 @@ gradle.projectsEvaluated {
 }
 
 gradle.buildStarted {
+
     println '>>>>>>>gradle.buildStarted'
 }
 gradle.settingsEvaluated {
