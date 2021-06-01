@@ -1,6 +1,7 @@
 package com.github.router.core
 
 import com.android.build.api.transform.*
+import com.android.build.api.variant.VariantInfo
 import com.android.build.gradle.internal.pipeline.TransformManager
 import com.android.utils.FileUtils
 
@@ -17,6 +18,14 @@ import java.util.zip.ZipEntry
  *
  */
 class MKRouterMappingTransform extends Transform {
+
+    @Override
+    boolean applyToVariant(VariantInfo variant) {
+        println "applyToVariant buildTypeName >>>>>>>>> " + variant.buildTypeName
+        println "applyToVariant fullVariantName >>>>>>>>> " + variant.fullVariantName
+        println "applyToVariant flavorNames: >>>>>>>>> " + variant.flavorNames.toListString()
+        return super.applyToVariant(variant)
+    }
 
 
     /**

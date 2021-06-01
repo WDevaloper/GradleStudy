@@ -4,6 +4,7 @@ import com.android.build.gradle.AppExtension
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.LibraryPlugin
 import com.github.router.Constants
+import com.github.router.extension.AndroidExtension
 import com.github.router.extension.RouterExtension
 import groovy.json.JsonSlurper
 import org.gradle.api.GradleException
@@ -30,6 +31,16 @@ class RouterPlugin implements Plugin<Project> {
             def android = target.extensions.getByType(AppExtension)
             android.registerTransform(new MKRouterMappingTransform())
             android.registerTransform(new ModifyClassExtendsTransform())
+        }
+
+        //内嵌 Extension，其实际本质是方法带了Closure参数
+        target.getExtensions().add("androidExtension", AndroidExtension)
+        target.afterEvaluate {
+            AndroidExtension androidExtension =
+                    target.extensions.getByName("androidExtension")
+            println androidExtension.defaultConfig.applicationId +
+                    ">>>nestedExtensionTest androidExtension>>>>>" +
+                    androidExtension.buildToolsVersion
         }
 
         // 1、自动帮助用户传递路径参数到注解处理器中

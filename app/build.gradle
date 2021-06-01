@@ -13,6 +13,17 @@ router {
     wikiDir project.buildDir.absolutePath
 }
 
+androidExtension {
+    compileSdkVersion 30
+    buildToolsVersion "30.0.3"
+
+    defaultConfig {
+        applicationId "com.github.gradle"
+        minSdkVersion 21
+    }
+}
+
+
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
