@@ -20,6 +20,7 @@ import java.util.zip.ZipEntry
 class MKRouterMappingTransform extends Transform {
 
     @Override
+
     boolean applyToVariant(VariantInfo variant) {
         println "applyToVariant buildTypeName >>>>>>>>> " + variant.buildTypeName
         println "applyToVariant fullVariantName >>>>>>>>> " + variant.fullVariantName
