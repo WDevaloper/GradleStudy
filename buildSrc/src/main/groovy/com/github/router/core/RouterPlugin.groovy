@@ -1,5 +1,6 @@
 package com.github.router.core
 
+import com.android.build.api.transform.Transform
 import com.android.build.gradle.AppExtension
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.LibraryPlugin
@@ -11,6 +12,9 @@ import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
+
+import java.lang.reflect.Field
+import java.util.function.Consumer
 
 // 路由插件
 class RouterPlugin implements Plugin<Project> {

@@ -5,6 +5,7 @@ plugins {
     id 'kotlin-android'
     id 'kotlin-kapt'
     id 'com.github.router'
+    id 'com.github.cwebp'
     // id 'com.github.router2'
     // id 'com.github.router3'
 }

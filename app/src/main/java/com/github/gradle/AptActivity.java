@@ -11,6 +11,7 @@ import com.github.router.annotate.DestinationMethod;
 import com.github.router.annotate.Parameter;
 import com.github.router.runtime.Router;
 
+import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.List;
 
@@ -67,5 +68,14 @@ public class AptActivity extends AppCompatActivity {
         Log.e(TAG, "list_param >>> " + list_param);
         Log.e(TAG, "user >>> " + user);
         Log.e(TAG, "person >>> " + person);
+
+
+        Class<User> userClass = User.class;
+        try {
+            Constructor<User> constructor = userClass.getDeclaredConstructor();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+
     }
 }
