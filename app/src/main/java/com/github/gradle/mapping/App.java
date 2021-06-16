@@ -5,6 +5,7 @@ import android.content.Context;
 
 import androidx.multidex.MultiDex;
 
+import com.github.gradle.MainActivity;
 import com.github.router.runtime.Router;
 
 public class App extends Application {
@@ -19,5 +20,6 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         Router.init();
+        MainActivity.CrashUncaughtExceptionHandler.init(this);
     }
 }

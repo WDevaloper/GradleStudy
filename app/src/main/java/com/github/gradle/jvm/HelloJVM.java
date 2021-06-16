@@ -1,6 +1,8 @@
 package com.github.gradle.jvm;
 
 
+import android.os.Debug;
+
 /**
  * 测试  jvm 运行时内存数据区
  */
