@@ -1,11 +1,11 @@
 package com.github.gradle
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.MutableLiveData
 import com.github.modify.IUpdateImpl
 import com.github.router.annotate.Destination
 import com.github.router.annotate.Parameter
@@ -29,6 +29,7 @@ class MainActivity : AppCompatActivity() {
     @JvmField
     var param3: Long = 0
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -36,7 +37,8 @@ class MainActivity : AppCompatActivity() {
         val iUpdateImpl = IUpdateImpl()
         iUpdateImpl.update()
 
-        Router.build("/app/AptActivity")
+        Router
+            .build("/app/AptActivity")
             .withString("param", "hello apt")
             .withSerializable("person", Person())
             .withInt("param2", 1)
@@ -50,6 +52,7 @@ class MainActivity : AppCompatActivity() {
 
         val userInfo = UserInfo()
         userInfo.getUser()
+
 
     }
 

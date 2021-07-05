@@ -15,7 +15,9 @@
             android:name="CHANNEL"
             android:value="${CHANNEL}" />
 
-        <activity android:name=".AptActivity"></activity>
+        <activity
+            android:name=".AptActivity"
+            android:exported="true" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

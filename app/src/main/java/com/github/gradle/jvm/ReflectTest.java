@@ -2,7 +2,7 @@ package com.github.gradle.jvm;
 
 
 public class ReflectTest {
-    private String ageTest = "";
+    private String ageTest = "ReflectTest";
 
 
     private String getAgeTest() {

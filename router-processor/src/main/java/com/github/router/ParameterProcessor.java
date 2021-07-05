@@ -71,6 +71,7 @@ public class ParameterProcessor extends AbstractProcessor {
             return false;
         }
 
+        messager.printMessage(Diagnostic.Kind.NOTE,"ParameterProcessor");
 
         Set<? extends Element> allParams =
                 roundEnvironment.getElementsAnnotatedWith(Parameter.class);

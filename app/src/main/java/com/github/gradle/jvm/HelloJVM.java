@@ -1,12 +1,15 @@
 package com.github.gradle.jvm;
 
 
-import android.os.Debug;
+import android.util.Log;
 
 /**
  * 测试  jvm 运行时内存数据区
  */
-public class HelloJVM {
+public class HelloJVM implements IHello {
+    int param;
+    String param1;
+
     public int add(int i, int j) {
         int result = 0;
         result = i + j;
@@ -16,13 +19,18 @@ public class HelloJVM {
         }
 
         newInstance();
-
+        sayHello();
         return result + 10;
     }
 
     public void newInstance() {
-        HelloJVM user = new HelloJVM();
+        HelloJVM helloJVM = new HelloJVM();
     }
 
+    @Override
+    public void sayHello() {
+        int hello = 0;
+        Log.e("TAG", "sayHello: ");
+    }
 }
 
