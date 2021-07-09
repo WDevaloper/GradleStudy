@@ -6,5 +6,11 @@ public class OpStack {
         result = i + j;
         return result + 100;
     }
+
+    public void add2() {
+        int a = 8;
+        int b = 6;
+        add(a, b);
+    }
 }
 

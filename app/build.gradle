@@ -340,4 +340,5 @@ task myTaskY { Task task ->
         println("execute task: " + task.getName())
     }
 }
-myTaskY.mustRunAfter(myTaskX)
+//myTaskY.mustRunAfter(myTaskX)
+myTaskX.finalizedBy(myTaskY)
