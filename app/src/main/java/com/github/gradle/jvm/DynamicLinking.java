@@ -1,5 +1,8 @@
 package com.github.gradle.jvm;
 
+/**
+ * 动态链接
+ */
 public class DynamicLinking {
 
     public void dynamicLinking() {

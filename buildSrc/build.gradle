@@ -18,6 +18,7 @@ dependencies {
 apply plugin: 'maven'
 
 
+
 // 配置maven插件中的uploadArchives任务
 uploadArchives {
     repositories {
@@ -32,6 +33,19 @@ uploadArchives {
                     version = "1.0.0"
                 }
             }
+        }
+    }
+}
+
+
+//gradle 中可以这样定义Plugin ，并不一定在resources/META-INF/gradle-plugins/xxx.properties中生命插件
+apply plugin: 'java-gradle-plugin'
+gradlePlugin {
+    plugins {
+        create('routerPlugin') {
+            id = 'com.github.router'
+            implementationClass = 'com.github.router.core.RouterPlugin'
+
         }
     }
 }
