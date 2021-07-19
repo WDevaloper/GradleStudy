@@ -30,12 +30,18 @@ class RouterPlugin implements Plugin<Project> {
             throw new GradleException("RouterPlugin: The 'com.android.application' or 'com.android.library' plugin is required.")
         }
 
-        // 注册Transform 只有App工程才有AppExtension
-        if (hasAppPlugin) {
+        target.pluginManager.withPlugin("com.android.application") {
             def android = target.extensions.getByType(AppExtension)
             android.registerTransform(new MKRouterMappingTransform())
             android.registerTransform(new ModifyClassExtendsTransform())
         }
+
+        // 注册Transform 只有App工程才有AppExtension
+//        if (hasAppPlugin) {
+//            def android = target.extensions.getByType(AppExtension)
+//            android.registerTransform(new MKRouterMappingTransform())
+//            android.registerTransform(new ModifyClassExtendsTransform())
+//        }
 
         //内嵌 Extension，其实际本质是方法带了Closure参数
         target.getExtensions().add("androidExtension", AndroidExtension)

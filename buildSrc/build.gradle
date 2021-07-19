@@ -18,7 +18,6 @@ dependencies {
 apply plugin: 'maven'
 
 
-
 // 配置maven插件中的uploadArchives任务
 uploadArchives {
     repositories {
@@ -46,6 +45,11 @@ gradlePlugin {
             id = 'com.github.router'
             implementationClass = 'com.github.router.core.RouterPlugin'
 
+        }
+
+        create("checkDuplicateRes") {
+            id = "check-duplicate"
+            implementationClass = 'com.github.router.plugin.CheckDuplicatePlugin'
         }
     }
 }

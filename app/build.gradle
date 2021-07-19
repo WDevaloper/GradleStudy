@@ -6,6 +6,7 @@ plugins {
     id 'kotlin-kapt'
     id 'com.github.router'
     id 'com.github.cwebp'
+    id 'check-duplicate'
     // id 'com.github.router2'
     // id 'com.github.router3'
 }
@@ -99,6 +100,13 @@ android {
     }
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+
+    android.applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "${variant.name}-${variant.versionName}.apk"
+            println " --------------------------------------------------outputFileName $outputFileName----------------"
+        }
     }
 }
 

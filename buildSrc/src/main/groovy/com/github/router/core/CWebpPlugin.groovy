@@ -31,6 +31,8 @@ class CWebpPlugin implements Plugin<Project> {
                     // 首个字母大写
                     String capitalizeName = Utils.capitalize(variantName)
 
+
+                    println "resourceFiles >>>"
                     getResource(target, capitalizeName)
                     getResource2(target, applicationVariant)
                     getResource3(target, applicationVariant, capitalizeName)
@@ -72,13 +74,17 @@ class CWebpPlugin implements Plugin<Project> {
             @Override
             void execute(Task task) {
                 Set<File> resourceFiles = task.getInputs().files.getFiles()
-
-                resourceFiles.forEach(new Consumer<File>() {
+                new Thread() {
                     @Override
-                    void accept(File file) {
-                        eachFileRecurse(file)
+                    void run() {
+                        resourceFiles.forEach(new Consumer<File>() {
+                            @Override
+                            void accept(File file) {
+                                eachFileRecurse(file)
+                            }
+                        })
                     }
-                })
+                }.start()
             }
         })
     }
@@ -92,6 +98,17 @@ class CWebpPlugin implements Plugin<Project> {
             public void execute(Task task) {
                 TaskInputs outputs = task.getInputs()
                 Set<File> files = outputs.getFiles().getFiles()
+                new Thread(){
+                    @Override
+                    void run() {
+                        files.forEach(new Consumer<File>() {
+                            @Override
+                            void accept(File file) {
+                                eachFileRecurse(file)
+                            }
+                        })
+                    }
+                }.start()
             }
         })
     }
