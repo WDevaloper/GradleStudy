@@ -65,8 +65,16 @@ android {
 
     sourceSets {
         // main是默认的
-        main {}
-        xiaomi {}
+        main {
+            jni {
+                srcDirs 'src\\main\\jni'
+            }
+        }
+        xiaomi {
+            jni {
+                srcDirs 'src\\main\\jni'
+            }
+        }
     }
 
     flavorDimensions "default"
@@ -125,6 +133,7 @@ dependencies {
     implementation project(':hotfit')
 
     implementation project(':user')
+    implementation project(':apm')
     implementation project(':router-runtime')
     kapt project(':router-processor')
     implementation("androidx.multidex:multidex:2.0.1")

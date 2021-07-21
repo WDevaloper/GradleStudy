@@ -12,12 +12,14 @@ import androidx.lifecycle.Observer;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.github.apm.APMActivity;
 import com.github.gradle.jvm.ReflectTest;
 import com.github.router.annotate.Destination;
 import com.github.router.annotate.DestinationMethod;
@@ -36,7 +38,6 @@ AptActivity extends AppCompatActivity {
 
     @Parameter
     String param;
-
 
     @Parameter
     int param2;
@@ -130,6 +131,14 @@ AptActivity extends AppCompatActivity {
         });
 
         liveString.postValue("程序亦非猿");
+
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                startActivity(new Intent(AptActivity.this, APMActivity.class));
+            }
+        }, 5000);
     }
 
 

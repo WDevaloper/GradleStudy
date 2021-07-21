@@ -1,6 +1,21 @@
 apply plugin: "groovy"
 apply plugin: 'java'
+apply plugin: 'kotlin'
 
+
+buildscript {
+
+    ext.kotlin_version = '1.5.10'
+
+    repositories {
+        jcenter()
+        google()
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
 
 repositories {
     jcenter()
@@ -13,6 +28,18 @@ dependencies {
     implementation "com.android.tools.build:gradle:4.1.2"
     implementation "org.ow2.asm:asm:7.1"
     implementation "org.ow2.asm:asm-commons:7.1"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+}
+
+sourceSets{
+    main{
+        groovy {
+            srcDir "../buildSrc/src/main/groovy"
+        }
+        kotlin {
+            srcDir "../buildSrc/src/main/kotlin"
+        }
+    }
 }
 
 apply plugin: 'maven'

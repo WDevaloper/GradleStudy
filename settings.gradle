@@ -21,7 +21,7 @@ pluginManagement {
 
 
 include ':user_export'
-
+include ':apm'
 include ':modify-class'
 include ':user'
 include ':router-runtime'// 申明子工程
