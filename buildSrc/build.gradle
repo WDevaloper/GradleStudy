@@ -78,5 +78,10 @@ gradlePlugin {
             id = "check-duplicate"
             implementationClass = 'com.github.router.plugin.CheckDuplicatePlugin'
         }
+
+        create("checkDuplicateRes2") {
+            id = "check-duplicate2"
+            implementationClass = 'com.github.router.plugin.CheckDuplicatePlugin2'
+        }
     }
 }

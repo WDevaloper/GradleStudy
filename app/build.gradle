@@ -7,6 +7,7 @@ plugins {
     id 'com.github.router'
     id 'com.github.cwebp'
     id 'check-duplicate'
+    id 'check-duplicate2'
     // id 'com.github.router2'
     // id 'com.github.router3'
 }

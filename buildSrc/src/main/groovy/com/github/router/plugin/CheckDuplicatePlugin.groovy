@@ -1,6 +1,10 @@
 package com.github.router.plugin
 
+import com.android.build.api.dsl.AndroidSourceSet
 import com.android.build.gradle.AppExtension
+import com.android.build.gradle.AppPlugin
+import com.android.build.gradle.BaseExtension
+import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.internal.api.BaseVariantImpl
 import org.gradle.api.Plugin
 import org.gradle.api.Project
