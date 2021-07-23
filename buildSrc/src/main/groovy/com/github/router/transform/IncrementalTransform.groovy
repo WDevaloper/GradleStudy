@@ -9,12 +9,10 @@ import com.android.build.api.transform.TransformException
 import com.android.build.api.transform.TransformInput
 import com.android.build.api.transform.TransformInvocation
 import com.android.build.api.transform.TransformOutputProvider
-import com.android.build.gradle.internal.pipeline.TransformManager
 import com.android.utils.FileUtils
 import com.google.common.collect.FluentIterable
 import org.apache.commons.io.IOUtils
 import org.gradle.api.Project
-import org.gradle.api.logging.Logger
 
 import java.util.jar.JarEntry
 import java.util.jar.JarFile
@@ -40,7 +38,6 @@ abstract class IncrementalTransform extends Transform {
         TransformOutputProvider outputProvider = invocation.outputProvider
 
         if (!invocation.isIncremental()) {
-            println("IncrementalTransform >>> ${invocation.isIncremental()}")
             outputProvider.deleteAll()
         }
 
@@ -58,15 +55,12 @@ abstract class IncrementalTransform extends Transform {
                 if (invocation.isIncremental()) {
                     if (jarInput.status == Status.NOTCHANGED) {
                         //文件没有改变
-                        println("IncrementalTransform >>> File NOTCHANGED>>>>>${outputJar.absolutePath}")
                     } else if (jarInput.status == Status.ADDED ||
                             jarInput.status == Status.CHANGED) {//文件有修改或增加
 
-                        println("IncrementalTransform >>> File CHANGED")
                         dispatchAction(inputJar, outputJar, true)
 
                     } else if (jarInput.status == Status.REMOVED) {//文件被移除
-                        println("IncrementalTransform >>> File REMOVED>>>>>${outputJar.absolutePath}")
                         //把上次输出的文件删除
                         FileUtils.delete(outputJar)
                     }
@@ -92,11 +86,9 @@ abstract class IncrementalTransform extends Transform {
 
                         if (entry.value == Status.NOTCHANGED) {
                             //文件没有改变
-                            println("IncrementalTransform >>> File NOTCHANGED>>>>>${outputDir.absolutePath}")
+                            println("IncrementalTransform >>> File NOTCHANGED")
                         } else if (entry.value == Status.ADDED ||
                                 entry.value == Status.CHANGED) {//文件有修改或增加
-
-                            println("IncrementalTransform >>> File CHANGED")
 
                             File outputFile = FileUtil.toOutputFile(outputDir, inputDir, inputFile)
 
@@ -106,7 +98,6 @@ abstract class IncrementalTransform extends Transform {
 
                             //把上次输出的目录删除
                             File outputFile = FileUtil.toOutputFile(outputDir, inputDir, inputFile)
-                            println("IncrementalTransform >>> File REMOVED>>>>>${outputFile.absolutePath}")
                             FileUtils.deleteIfExists(outputFile)
                         }
                     }
