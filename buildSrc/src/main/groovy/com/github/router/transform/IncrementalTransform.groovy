@@ -49,105 +49,105 @@ abstract class IncrementalTransform extends Transform {
         invocation.inputs.each { TransformInput transformInput ->
             // JAR
             transformInput.jarInputs.each { JarInput jarInput ->
-                //得到上一个Transform输入文件
-                File inputJar = jarInput.file
-                // 得到当前Transform输出Jar文件
-                File outputJar =
-                        outputProvider.getContentLocation(
-                                jarInput.name, jarInput.contentTypes,
-                                jarInput.scopes, Format.JAR)
-
-                if (invocation.isIncremental()) {
-                    if (jarInput.status == Status.NOTCHANGED) {
-                        //文件没有改变
-                    } else if (jarInput.status == Status.ADDED ||
-                            jarInput.status == Status.CHANGED) {//文件有修改或增加
-
-                        globalSharedThreadPool.execute(new Callable<Void>() {
-                            @Override
-                            Void call() throws Exception {
-                                dispatchAction(inputJar, outputJar, true)
-                                return null
-                            }
-                        })
-
-                    } else if (jarInput.status == Status.REMOVED) {//文件被移除
-                        //把上次输出的文件删除
-                        FileUtils.delete(outputJar)
+                globalSharedThreadPool.execute(new Callable<Void>() {
+                    @Override
+                    Void call() throws Exception {
+                        handleJar(jarInput, outputProvider, invocation)
+                        return null
                     }
-                } else {
-                    globalSharedThreadPool.execute(new Callable<Void>() {
-                        @Override
-                        Void call() throws Exception {
-                            dispatchAction(inputJar, outputJar, true)
-                            return null
-                        }
-                    })
-                }
+                })
             }
 
             // DIR
             transformInput.directoryInputs.each { DirectoryInput directoryInput ->
-                //得到上一个Transform输入文件目录
-                File inputDir = directoryInput.file
-
-                // 得到当前Transform输出文件目录
-                File outputDir =
-                        outputProvider.getContentLocation(
-                                directoryInput.name, directoryInput.contentTypes,
-                                directoryInput.scopes, Format.DIRECTORY)
-
-                if (invocation.isIncremental()) {
-                    directoryInput.changedFiles.entrySet().each { Map.Entry<File, Status> entry ->
-                        File inputFile = entry.key
-
-                        if (entry.value == Status.NOTCHANGED) {
-                            //文件没有改变
-                            println("IncrementalTransform >>> File NOTCHANGED")
-                        } else if (entry.value == Status.ADDED ||
-                                entry.value == Status.CHANGED) {//文件有修改或增加
-
-                            File outputFile = FileUtil.toOutputFile(outputDir, inputDir, inputFile)
-
-                            globalSharedThreadPool.execute(new Callable<Void>() {
-                                @Override
-                                Void call() throws Exception {
-                                    dispatchAction(inputFile, outputFile, false)
-                                    return null
-                                }
-                            })
-
-                        } else if (entry.value == Status.REMOVED) {//文件被移除
-
-                            //把上次输出的目录删除
-                            File outputFile = FileUtil.toOutputFile(outputDir, inputDir, inputFile)
-                            FileUtils.deleteIfExists(outputFile)
-                        }
+                globalSharedThreadPool.execute(new Callable<Void>() {
+                    @Override
+                    Void call() throws Exception {
+                        handleDirectory(directoryInput, outputProvider, invocation)
+                        return null
                     }
-                } else {
-                    // 上一个Transform的输出目录下的所有文件
-                    FluentIterable<File> dirChildFiles = FileUtils.getAllFiles(inputDir)
-
-                    dirChildFiles.each { File inputFile ->
-                        // 当前Transform输出文件
-                        File outputFile = FileUtil.toOutputFile(outputDir, inputDir, inputFile)
-
-                        globalSharedThreadPool.execute(new Callable<Void>() {
-                            @Override
-                            Void call() throws Exception {
-                                dispatchAction(inputFile, outputFile, false)
-                                return null
-                            }
-                        })
-                    }
-                }
+                })
             }
         }
-
 
         //等待所有任务结束
         globalSharedThreadPool.waitForTasksWithQuickFail(true)
     }
+
+    private void handleJar(
+            JarInput jarInput,
+            TransformOutputProvider outputProvider,
+            TransformInvocation invocation) {
+
+        //得到上一个Transform输入文件
+        File inputJar = jarInput.file
+        // 得到当前Transform输出Jar文件
+        File outputJar =
+                outputProvider.getContentLocation(
+                        jarInput.name, jarInput.contentTypes,
+                        jarInput.scopes, Format.JAR)
+
+        if (invocation.isIncremental()) {
+            if (jarInput.status == Status.NOTCHANGED) {
+                //文件没有改变
+            } else if (jarInput.status == Status.ADDED ||
+                    jarInput.status == Status.CHANGED) {//文件有修改或增加
+
+                dispatchAction(inputJar, outputJar, true)
+
+            } else if (jarInput.status == Status.REMOVED) {//文件被移除
+                //把上次当前Transform输出文件删除
+                FileUtils.delete(outputJar)
+            }
+        } else {
+            dispatchAction(inputJar, outputJar, true)
+        }
+    }
+
+    private void handleDirectory(
+            DirectoryInput directoryInput, TransformOutputProvider outputProvider,
+            TransformInvocation invocation) {
+        //得到上一个Transform输入文件目录
+        File inputDir = directoryInput.file
+
+        // 得到当前Transform输出文件目录
+        File outputDir =
+                outputProvider.getContentLocation(
+                        directoryInput.name, directoryInput.contentTypes,
+                        directoryInput.scopes, Format.DIRECTORY)
+
+        if (invocation.isIncremental()) {
+            directoryInput.changedFiles.entrySet().each { Map.Entry<File, Status> entry ->
+                File inputFile = entry.key
+
+                if (entry.value == Status.NOTCHANGED) {
+                    //文件没有改变
+                    println("IncrementalTransform >>> File NOTCHANGED")
+                } else if (entry.value == Status.ADDED ||
+                        entry.value == Status.CHANGED) {//文件有修改或增加
+
+                    File outputFile = FileUtil.toOutputFile(outputDir, inputDir, inputFile)
+                    dispatchAction(inputFile, outputFile, false)
+
+                } else if (entry.value == Status.REMOVED) {//文件被移除
+
+                    //把上次输出的目录删除
+                    File outputFile = FileUtil.toOutputFile(outputDir, inputDir, inputFile)
+                    FileUtils.deleteIfExists(outputFile)
+                }
+            }
+        } else {
+            // 上一个Transform的输出目录下的所有文件
+            FluentIterable<File> dirChildFiles = FileUtils.getAllFiles(inputDir)
+
+            dirChildFiles.each { File inputFile ->
+                // 当前Transform输出文件
+                File outputFile = FileUtil.toOutputFile(outputDir, inputDir, inputFile)
+                dispatchAction(inputFile, outputFile, false)
+            }
+        }
+    }
+
 
     protected void dispatchAction(
             File inputFile, File outputFile, boolean handleJar) {

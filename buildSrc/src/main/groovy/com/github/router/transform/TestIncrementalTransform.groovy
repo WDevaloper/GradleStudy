@@ -15,6 +15,7 @@ class TestIncrementalTransform extends IncrementalTransform {
     protected boolean doJarAction(InputStream inputStream, OutputStream outputStream) {
         println("DefaultIncrementalTransform.doJarAction ${Thread.currentThread().name}")
         return false
+
     }
 
     @Override
