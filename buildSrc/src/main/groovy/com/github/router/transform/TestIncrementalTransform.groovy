@@ -5,9 +5,9 @@ import com.android.build.gradle.internal.pipeline.TransformManager
 import org.gradle.api.Project
 
 
-class DefaultIncrementalTransform extends IncrementalTransform {
+class TestIncrementalTransform extends IncrementalTransform {
 
-    DefaultIncrementalTransform(Project project) {
+    TestIncrementalTransform(Project project) {
         super(project)
     }
 
