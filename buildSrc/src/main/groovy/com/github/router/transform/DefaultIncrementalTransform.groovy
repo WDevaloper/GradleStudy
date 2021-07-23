@@ -13,11 +13,13 @@ class DefaultIncrementalTransform extends IncrementalTransform {
 
     @Override
     protected boolean doJarAction(InputStream inputStream, OutputStream outputStream) {
+        println("DefaultIncrementalTransform.doJarAction ${Thread.currentThread().name}")
         return false
     }
 
     @Override
     protected boolean doDirectoryAction(File inputJar, File outputJar) {
+        println("DefaultIncrementalTransform.doDirectoryAction ${Thread.currentThread().name}")
         return false
     }
 

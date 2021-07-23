@@ -9,11 +9,14 @@ import com.android.build.api.transform.TransformException
 import com.android.build.api.transform.TransformInput
 import com.android.build.api.transform.TransformInvocation
 import com.android.build.api.transform.TransformOutputProvider
+import com.android.ide.common.internal.WaitableExecutor
+import com.android.ide.common.workers.WorkerExecutorFacade
 import com.android.utils.FileUtils
 import com.google.common.collect.FluentIterable
 import org.apache.commons.io.IOUtils
 import org.gradle.api.Project
 
+import java.util.concurrent.Callable
 import java.util.jar.JarEntry
 import java.util.jar.JarFile
 import java.util.jar.JarOutputStream
@@ -22,9 +25,12 @@ import java.util.zip.ZipEntry
 
 abstract class IncrementalTransform extends Transform {
 
+    // 共享线程池
+    private WaitableExecutor waitableExecutor = WaitableExecutor.useGlobalSharedThreadPool()
+
     private Project project
 
-    public IncrementalTransform(Project project) {
+    IncrementalTransform(Project project) {
         this.project = project
     }
 
@@ -58,14 +64,26 @@ abstract class IncrementalTransform extends Transform {
                     } else if (jarInput.status == Status.ADDED ||
                             jarInput.status == Status.CHANGED) {//文件有修改或增加
 
-                        dispatchAction(inputJar, outputJar, true)
+                        waitableExecutor.execute(new Callable<Void>() {
+                            @Override
+                            Void call() throws Exception {
+                                dispatchAction(inputJar, outputJar, true)
+                                return null
+                            }
+                        })
 
                     } else if (jarInput.status == Status.REMOVED) {//文件被移除
                         //把上次输出的文件删除
                         FileUtils.delete(outputJar)
                     }
                 } else {
-                    dispatchAction(inputJar, outputJar, true)
+                    waitableExecutor.execute(new Callable<Void>() {
+                        @Override
+                        Void call() throws Exception {
+                            dispatchAction(inputJar, outputJar, true)
+                            return null
+                        }
+                    })
                 }
             }
 
@@ -92,7 +110,13 @@ abstract class IncrementalTransform extends Transform {
 
                             File outputFile = FileUtil.toOutputFile(outputDir, inputDir, inputFile)
 
-                            dispatchAction(inputFile, outputFile, false)
+                            waitableExecutor.execute(new Callable<Void>() {
+                                @Override
+                                Void call() throws Exception {
+                                    dispatchAction(inputFile, outputFile, false)
+                                    return null
+                                }
+                            })
 
                         } else if (entry.value == Status.REMOVED) {//文件被移除
 
@@ -109,11 +133,21 @@ abstract class IncrementalTransform extends Transform {
                         // 当前Transform输出文件
                         File outputFile = FileUtil.toOutputFile(outputDir, inputDir, inputFile)
 
-                        dispatchAction(inputFile, outputFile, false)
+                        waitableExecutor.execute(new Callable<Void>() {
+                            @Override
+                            Void call() throws Exception {
+                                dispatchAction(inputFile, outputFile, false)
+                                return null
+                            }
+                        })
                     }
                 }
             }
         }
+
+
+        //等待所有任务结束
+        waitableExecutor.waitForTasksWithQuickFail(true)
     }
 
     protected void dispatchAction(
@@ -168,6 +202,8 @@ abstract class IncrementalTransform extends Transform {
     /**
      *  处理Jar文件的资源
      *
+     *  这些都是在工作线程中执行的
+     *
      * @param inputStream 上一个Transform的输入流
      * @param outputStream 当前Transform的输出流
      * @return isHandle 是否已经处理了该文件，如果已经处理了文件返回 true
@@ -178,6 +214,9 @@ abstract class IncrementalTransform extends Transform {
 
     /**
      * 处理目录的资源文件
+     *
+     *
+     * 这些都是在 工作线程中执行的
      *
      * @param inputJar
      * @param outputJar
