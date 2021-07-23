@@ -10,7 +10,6 @@ import com.android.build.api.transform.TransformInput
 import com.android.build.api.transform.TransformInvocation
 import com.android.build.api.transform.TransformOutputProvider
 import com.android.ide.common.internal.WaitableExecutor
-import com.android.ide.common.workers.WorkerExecutorFacade
 import com.android.utils.FileUtils
 import com.google.common.collect.FluentIterable
 import org.apache.commons.io.IOUtils
@@ -26,7 +25,7 @@ import java.util.zip.ZipEntry
 abstract class IncrementalTransform extends Transform {
 
     // 共享线程池
-    private WaitableExecutor waitableExecutor = WaitableExecutor.useGlobalSharedThreadPool()
+    protected final WaitableExecutor globalSharedThreadPool = WaitableExecutor.useGlobalSharedThreadPool()
 
     private Project project
 
@@ -64,7 +63,7 @@ abstract class IncrementalTransform extends Transform {
                     } else if (jarInput.status == Status.ADDED ||
                             jarInput.status == Status.CHANGED) {//文件有修改或增加
 
-                        waitableExecutor.execute(new Callable<Void>() {
+                        globalSharedThreadPool.execute(new Callable<Void>() {
                             @Override
                             Void call() throws Exception {
                                 dispatchAction(inputJar, outputJar, true)
@@ -77,7 +76,7 @@ abstract class IncrementalTransform extends Transform {
                         FileUtils.delete(outputJar)
                     }
                 } else {
-                    waitableExecutor.execute(new Callable<Void>() {
+                    globalSharedThreadPool.execute(new Callable<Void>() {
                         @Override
                         Void call() throws Exception {
                             dispatchAction(inputJar, outputJar, true)
@@ -110,7 +109,7 @@ abstract class IncrementalTransform extends Transform {
 
                             File outputFile = FileUtil.toOutputFile(outputDir, inputDir, inputFile)
 
-                            waitableExecutor.execute(new Callable<Void>() {
+                            globalSharedThreadPool.execute(new Callable<Void>() {
                                 @Override
                                 Void call() throws Exception {
                                     dispatchAction(inputFile, outputFile, false)
@@ -133,7 +132,7 @@ abstract class IncrementalTransform extends Transform {
                         // 当前Transform输出文件
                         File outputFile = FileUtil.toOutputFile(outputDir, inputDir, inputFile)
 
-                        waitableExecutor.execute(new Callable<Void>() {
+                        globalSharedThreadPool.execute(new Callable<Void>() {
                             @Override
                             Void call() throws Exception {
                                 dispatchAction(inputFile, outputFile, false)
@@ -147,7 +146,7 @@ abstract class IncrementalTransform extends Transform {
 
 
         //等待所有任务结束
-        waitableExecutor.waitForTasksWithQuickFail(true)
+        globalSharedThreadPool.waitForTasksWithQuickFail(true)
     }
 
     protected void dispatchAction(

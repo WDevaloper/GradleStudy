@@ -25,7 +25,7 @@ class TestIncrementalTransform extends IncrementalTransform {
 
     @Override
     String getName() {
-        return "DefaultIncrementalTransform"
+        return "TestIncrementalTransform"
     }
 
     @Override
