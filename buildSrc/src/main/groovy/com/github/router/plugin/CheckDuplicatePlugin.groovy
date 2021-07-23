@@ -6,6 +6,7 @@ import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.internal.api.BaseVariantImpl
+import com.github.router.transform.DefaultIncrementalTransform
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -24,6 +25,9 @@ class CheckDuplicatePlugin implements Plugin<Project> {
 
         AppExtension extension = project.extensions.getByType(AppExtension)
         def variants = extension.getApplicationVariants()
+
+        extension.registerTransform(new DefaultIncrementalTransform(project))
+
 
         project.afterEvaluate {
             variants.all { BaseVariantImpl variant ->
