@@ -217,8 +217,8 @@ abstract class IncrementalTransform extends Transform {
      *
      * 这些都是在 工作线程中执行的
      *
-     * @param inputJar
-     * @param outputJar
+     * @param inputJar 上一个Transform的输入文件
+     * @param outputJar 当前Transform的输出文件
      * @return 是否已经处理了该文件，如果已经处理了文件返回 true
      */
     protected abstract boolean doDirectoryAction(File inputJar, File outputJar)
