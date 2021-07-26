@@ -3,7 +3,9 @@ package com.github.gradle;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+//sdfsda
 public class User implements Parcelable {
+    private int id;
     private String name;
     private int age;
 
@@ -23,7 +25,8 @@ public class User implements Parcelable {
         this.name = name;
     }
 
-    public User(){}
+    public User() {
+    }
 
     protected User(Parcel in) {
         name = in.readString();

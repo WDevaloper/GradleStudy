@@ -11,6 +11,8 @@ import com.android.build.api.transform.TransformInvocation
 import com.android.build.api.transform.TransformOutputProvider
 import com.android.ide.common.internal.WaitableExecutor
 import com.android.utils.FileUtils
+import com.github.router.concurrent.ITask
+import com.github.router.concurrent.ThreadPool
 import com.google.common.collect.FluentIterable
 import org.apache.commons.io.IOUtils
 import org.gradle.api.Project
@@ -25,7 +27,9 @@ import java.util.zip.ZipEntry
 abstract class IncrementalTransform extends Transform {
 
     // 共享线程池
-    protected final WaitableExecutor globalSharedThreadPool = WaitableExecutor.useGlobalSharedThreadPool()
+    //protected final WaitableExecutor globalSharedThreadPool = WaitableExecutor.useGlobalSharedThreadPool()
+
+    protected final ThreadPool threadPool = new ThreadPool()
 
     private Project project
 
@@ -49,29 +53,29 @@ abstract class IncrementalTransform extends Transform {
         invocation.inputs.each { TransformInput transformInput ->
             // JAR
             transformInput.jarInputs.each { JarInput jarInput ->
-                globalSharedThreadPool.execute(new Callable<Void>() {
+                threadPool.addTask(new ITask() {
                     @Override
                     Void call() throws Exception {
-                        handleJar(jarInput, outputProvider, invocation)
-                        return null
+                        return handleJar(jarInput, outputProvider, invocation)
                     }
                 })
             }
 
             // DIR
             transformInput.directoryInputs.each { DirectoryInput directoryInput ->
-                globalSharedThreadPool.execute(new Callable<Void>() {
+                threadPool.addTask(new ITask() {
                     @Override
                     Void call() throws Exception {
-                        handleDirectory(directoryInput, outputProvider, invocation)
-                        return null
+                        return handleDirectory(directoryInput, outputProvider, invocation)
                     }
                 })
             }
         }
 
         //等待所有任务结束
-        globalSharedThreadPool.waitForTasksWithQuickFail(true)
+        //globalSharedThreadPool.waitForTasksWithQuickFail(true)
+
+        threadPool.startWork()
     }
 
     private void handleJar(
