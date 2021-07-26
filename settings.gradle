@@ -19,7 +19,7 @@ pluginManagement {
     }
 }
 
-
+include ':Base'
 include ':user_export'
 include ':apm'
 include ':modify-class'
