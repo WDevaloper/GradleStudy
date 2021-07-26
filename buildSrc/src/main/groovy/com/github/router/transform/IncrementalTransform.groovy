@@ -87,19 +87,24 @@ abstract class IncrementalTransform extends Transform {
                         jarInput.name, jarInput.contentTypes,
                         jarInput.scopes, Format.JAR)
 
-        if (invocation.isIncremental()) {
-            if (jarInput.status == Status.NOTCHANGED) {
-                //文件没有改变
-            } else if (jarInput.status == Status.ADDED ||
-                    jarInput.status == Status.CHANGED) {//文件有修改或增加
+        if (invocation.isIncremental()) {// 增量处理
+            if (jarInput.status == Status.NOTCHANGED) {//文件没有改变
+                println("IncrementalTransform >>> File NOTCHANGED")
+            } else if (jarInput.status == Status.ADDED) {//有新增文件
 
                 dispatchAction(inputJar, outputJar, true)
 
+            } else if (jarInput.status == Status.CHANGED) {//有修改文件
+
+                FileUtils.deleteIfExists(outputJar)// 先把上次生成的文件删除
+                dispatchAction(inputJar, outputJar, true)
+
             } else if (jarInput.status == Status.REMOVED) {//文件被移除
+
                 //把上次当前Transform输出文件删除
                 FileUtils.delete(outputJar)
             }
-        } else {
+        } else {// 全量处理
             dispatchAction(inputJar, outputJar, true)
         }
     }
@@ -120,13 +125,17 @@ abstract class IncrementalTransform extends Transform {
             directoryInput.changedFiles.entrySet().each { Map.Entry<File, Status> entry ->
                 File inputFile = entry.key
 
-                if (entry.value == Status.NOTCHANGED) {
-                    //文件没有改变
+                if (entry.value == Status.NOTCHANGED) {//文件没有改变
                     println("IncrementalTransform >>> File NOTCHANGED")
-                } else if (entry.value == Status.ADDED ||
-                        entry.value == Status.CHANGED) {//文件有修改或增加
+                } else if (entry.value == Status.ADDED) {//有增加文件
 
                     File outputFile = FileUtil.toOutputFile(outputDir, inputDir, inputFile)
+                    dispatchAction(inputFile, outputFile, false)
+
+                } else if (entry.value == Status.CHANGED) {//文件有修改
+
+                    File outputFile = FileUtil.toOutputFile(outputDir, inputDir, inputFile)
+                    FileUtils.deleteIfExists(outputFile)// 先把上次生成的文件删除
                     dispatchAction(inputFile, outputFile, false)
 
                 } else if (entry.value == Status.REMOVED) {//文件被移除
