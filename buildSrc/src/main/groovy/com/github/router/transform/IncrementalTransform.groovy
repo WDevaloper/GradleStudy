@@ -40,6 +40,7 @@ abstract class IncrementalTransform extends Transform {
     @Override
     void transform(TransformInvocation transformInvocation)
             throws TransformException, InterruptedException, IOException {
+
         doTransform(transformInvocation)
     }
 
@@ -106,7 +107,7 @@ abstract class IncrementalTransform extends Transform {
             } else if (jarInput.status == Status.REMOVED) {//文件被移除
 
                 //把上次当前Transform输出文件删除
-                FileUtils.delete(outputJar)
+                FileUtils.deleteIfExists(outputJar)
             }
         } else {// 全量处理
             dispatchAction(inputJar, outputJar, true)
@@ -114,7 +115,8 @@ abstract class IncrementalTransform extends Transform {
     }
 
     private void handleDirectory(
-            DirectoryInput directoryInput, TransformOutputProvider outputProvider,
+            DirectoryInput directoryInput,
+            TransformOutputProvider outputProvider,
             TransformInvocation invocation) {
         //得到上一个Transform输入文件目录
         File inputDir = directoryInput.file

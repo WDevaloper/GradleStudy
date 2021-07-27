@@ -1,8 +1,5 @@
 package com.github.router.concurrent
 
-import org.gradle.api.Action
-
-import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 
