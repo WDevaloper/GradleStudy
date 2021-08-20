@@ -32,8 +32,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Destination(url = "/app/AptActivity", description = "路由测试")
-public class
-AptActivity extends AppCompatActivity {
+public class AptActivity extends AppCompatActivity {
     private static final String TAG = AptActivity.class.getSimpleName();
 
     @Parameter
